@@ -22,9 +22,6 @@ export default function Events() {
       >
         <div>
           <h1 className="text-4xl md:text-6xl font-display font-bold mb-4">Upcoming</h1>
-          <p className="text-muted-foreground max-w-md">
-            Limited capacity for all gatherings. Priority access given to members.
-          </p>
         </div>
         <div className="hidden md:block text-right text-xs font-mono text-white/40">
           SEASON 01 <br /> COLLECTION

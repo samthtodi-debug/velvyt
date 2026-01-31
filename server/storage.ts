@@ -1,13 +1,9 @@
-import { db } from "./db";
 import {
-  events,
-  rsvps,
   type Event,
   type InsertEvent,
   type Rsvp,
   type InsertRsvp
 } from "@shared/schema";
-import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getEvents(): Promise<Event[]>;
@@ -16,23 +12,38 @@ export interface IStorage {
   createRsvp(rsvp: InsertRsvp): Promise<Rsvp>;
 }
 
+// TEMP: in-memory storage (NO DATABASE)
 export class DatabaseStorage implements IStorage {
+  private events: Event[] = [];
+  private rsvps: Rsvp[] = [];
+  private eventId = 1;
+  private rsvpId = 1;
+
   async getEvents(): Promise<Event[]> {
-    return await db.select().from(events);
+    return this.events;
   }
 
   async getEvent(id: number): Promise<Event | undefined> {
-    const [event] = await db.select().from(events).where(eq(events.id, id));
-    return event;
+    return this.events.find(e => e.id === id);
   }
 
   async createEvent(insertEvent: InsertEvent): Promise<Event> {
-    const [event] = await db.insert(events).values(insertEvent).returning();
+    const event: Event = {
+      id: this.eventId++,
+      ...insertEvent,
+    } as Event;
+
+    this.events.push(event);
     return event;
   }
 
   async createRsvp(insertRsvp: InsertRsvp): Promise<Rsvp> {
-    const [rsvp] = await db.insert(rsvps).values(insertRsvp).returning();
+    const rsvp: Rsvp = {
+      id: this.rsvpId++,
+      ...insertRsvp,
+    } as Rsvp;
+
+    this.rsvps.push(rsvp);
     return rsvp;
   }
 }

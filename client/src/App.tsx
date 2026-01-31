@@ -8,6 +8,7 @@ import Home from "@/pages/Home";
 import Events from "@/pages/Events";
 import Rsvp from "@/pages/Rsvp";
 import NotFound from "@/pages/not-found";
+import yepImg from "@/assets/yep.png";
 
 function Router() {
   return (
@@ -25,10 +26,10 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <div className="fixed inset-0 z-0 pointer-events-auto">
         <GridDistortion 
-          imageSrc="https://images.unsplash.com/photo-1557682250-33bd709cbe85?auto=format&fit=crop&w=2000&q=80"
-          grid={20}
-          mouse={0.15}
-          strength={0.2}
+          imageSrc={yepImg}
+          grid={10}
+          mouse={0.1}
+          strength={0.15}
           relaxation={0.9}
           className="w-full h-full"
         />

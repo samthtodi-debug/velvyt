@@ -81,7 +81,7 @@ async function seedDatabase() {
       title: "Velvyt Launch: Genesis",
       description: "The beginning of a new era. Experience the unseen.",
       date: event1Date,
-      location: "Secret Warehouse, DTLA",
+      location: "Secret Warehouse, Jaipur",
       imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80",
       isExclusive: true,
     });
@@ -90,7 +90,7 @@ async function seedDatabase() {
       title: "Midnight Mirage",
       description: "A rooftop experience under the stars. High fashion, high altitude.",
       date: event2Date,
-      location: "Sky Lounge, Hollywood",
+      location: "Ur mum's place, Jaipur",
       imageUrl: "https://images.unsplash.com/photo-1514525253440-b393452e8d26?auto=format&fit=crop&q=80",
       isExclusive: false,
     });
@@ -99,7 +99,7 @@ async function seedDatabase() {
       title: "Neon Shadows",
       description: "Underground vibes. Strict dress code.",
       date: new Date(today.setMonth(today.getMonth() + 2)),
-      location: "The Bunker, Brooklyn",
+      location: "The Bunker, Jaipur",
       imageUrl: "https://images.unsplash.com/photo-1545128485-c400e7702796?auto=format&fit=crop&q=80",
       isExclusive: true,
     });
