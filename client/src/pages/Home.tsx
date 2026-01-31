@@ -21,8 +21,7 @@ export default function Home() {
         </h1>
         
         <p className="max-w-md mx-auto text-sm md:text-base text-muted-foreground leading-relaxed mb-12">
-          Curating exclusive nightlife experiences for the discerning few. 
-          Where luxury meets the underground.
+          Constant law curation.
         </p>
 
         <Link 

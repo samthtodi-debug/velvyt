@@ -188,8 +188,9 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
       });
     };
 
-    container.addEventListener('mousemove', handleMouseMove);
-    container.addEventListener('mouseleave', handleMouseLeave);
+    // Use window-level mouse tracking so it works even when content is on top
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseleave', handleMouseLeave);
 
     handleResize();
 
@@ -243,8 +244,8 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
         window.removeEventListener('resize', handleResize);
       }
 
-      container.removeEventListener('mousemove', handleMouseMove);
-      container.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseleave', handleMouseLeave);
 
       if (renderer) {
         renderer.dispose();
