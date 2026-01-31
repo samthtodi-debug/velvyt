@@ -1,92 +1,282 @@
-import { Canvas, useFrame } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
-import * as THREE from "three";
+import { useRef, useEffect } from 'react';
+import * as THREE from 'three';
 
-function Particles() {
-  const count = 3000; // Increased density for high-end feel
-  const mesh = useRef<THREE.InstancedMesh>(null);
-  const light = useRef<THREE.PointLight>(null);
-  
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-  
-  // Create a grid of points
-  const particles = useMemo(() => {
-    const temp = [];
-    const size = 60; // Spread
-    for (let i = 0; i < count; i++) {
-      const t = Math.random() * 100;
-      const factor = 20 + Math.random() * 100;
-      const speed = 0.01 + Math.random() / 200;
-      const x = Math.random() * size - size / 2;
-      const y = Math.random() * size - size / 2;
-      const z = Math.random() * size - size / 2;
-      temp.push({ t, factor, speed, x, y, z, mx: 0, my: 0 });
-    }
-    return temp;
-  }, [count]);
+interface GridDistortionProps {
+  grid?: number;
+  mouse?: number;
+  strength?: number;
+  relaxation?: number;
+  imageSrc: string;
+  className?: string;
+}
 
-  useFrame((state) => {
-    if (!mesh.current) return;
+const vertexShader = `
+uniform float time;
+varying vec2 vUv;
+varying vec3 vPosition;
 
-    // Mouse interaction - convert normalized coordinates to world space approx
-    const time = state.clock.getElapsedTime();
-    const { pointer, viewport } = state;
-    const mx = (pointer.x * viewport.width) / 2;
-    const my = (pointer.y * viewport.height) / 2;
+void main() {
+  vUv = uv;
+  vPosition = position;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
 
-    particles.forEach((particle, i) => {
-      let { t, factor, speed, x, y, z } = particle;
+const fragmentShader = `
+uniform sampler2D uDataTexture;
+uniform sampler2D uTexture;
+uniform vec4 resolution;
+varying vec2 vUv;
 
-      // Vertical flow movement
-      t = particle.t += speed / 2;
-      const a = Math.cos(t) + Math.sin(t * 1) / 10;
-      const b = Math.sin(t) + Math.cos(t * 2) / 10;
-      const s = Math.cos(t);
+void main() {
+  vec2 uv = vUv;
+  vec4 offset = texture2D(uDataTexture, vUv);
+  gl_FragColor = texture2D(uTexture, uv - 0.02 * offset.rg);
+}
+`;
 
-      // Mouse repulsion/attraction effect
-      const dx = mx - x;
-      const dy = my - y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      
-      // Distortion logic
-      const distortion = Math.max(0, 5 - dist / 3); 
-      
-      dummy.position.set(
-        x + (Math.cos(t) * 0.5) + (dx / dist) * distortion,
-        y + (Math.sin(t) * 0.5) + (dy / dist) * distortion,
-        z + (Math.sin(t) * 0.5)
-      );
-      
-      const scale = (s > 0 ? s : -s) * 0.08; // Small, refined points
-      dummy.scale.set(scale, scale, scale);
-      dummy.rotation.set(s * 5, s * 5, s * 5);
-      dummy.updateMatrix();
-      
-      mesh.current!.setMatrixAt(i, dummy.matrix);
+const GridDistortion: React.FC<GridDistortionProps> = ({
+  grid = 15,
+  mouse = 0.1,
+  strength = 0.15,
+  relaxation = 0.9,
+  imageSrc,
+  className = ''
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const cameraRef = useRef<THREE.OrthographicCamera | null>(null);
+  const planeRef = useRef<THREE.Mesh | null>(null);
+  const imageAspectRef = useRef<number>(1);
+  const animationIdRef = useRef<number | null>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const container = containerRef.current;
+
+    const scene = new THREE.Scene();
+    sceneRef.current = scene;
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: 'high-performance'
     });
-    
-    mesh.current.instanceMatrix.needsUpdate = true;
-  });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+    rendererRef.current = renderer;
+
+    container.innerHTML = '';
+    container.appendChild(renderer.domElement);
+
+    const camera = new THREE.OrthographicCamera(0, 0, 0, 0, -1000, 1000);
+    camera.position.z = 2;
+    cameraRef.current = camera;
+
+    const uniforms = {
+      time: { value: 0 },
+      resolution: { value: new THREE.Vector4() },
+      uTexture: { value: null as THREE.Texture | null },
+      uDataTexture: { value: null as THREE.DataTexture | null }
+    };
+
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load(imageSrc, texture => {
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.wrapS = THREE.ClampToEdgeWrapping;
+      texture.wrapT = THREE.ClampToEdgeWrapping;
+      imageAspectRef.current = texture.image.width / texture.image.height;
+      uniforms.uTexture.value = texture;
+      handleResize();
+    });
+
+    const size = grid;
+    const data = new Float32Array(4 * size * size);
+    for (let i = 0; i < size * size; i++) {
+      data[i * 4] = Math.random() * 255 - 125;
+      data[i * 4 + 1] = Math.random() * 255 - 125;
+    }
+
+    const dataTexture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat, THREE.FloatType);
+    dataTexture.needsUpdate = true;
+    uniforms.uDataTexture.value = dataTexture;
+
+    const material = new THREE.ShaderMaterial({
+      side: THREE.DoubleSide,
+      uniforms,
+      vertexShader,
+      fragmentShader,
+      transparent: true
+    });
+
+    const geometry = new THREE.PlaneGeometry(1, 1, size - 1, size - 1);
+    const plane = new THREE.Mesh(geometry, material);
+    planeRef.current = plane;
+    scene.add(plane);
+
+    const handleResize = () => {
+      if (!container || !renderer || !camera) return;
+
+      const rect = container.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+
+      if (width === 0 || height === 0) return;
+
+      const containerAspect = width / height;
+
+      renderer.setSize(width, height);
+
+      if (plane) {
+        plane.scale.set(containerAspect, 1, 1);
+      }
+
+      const frustumHeight = 1;
+      const frustumWidth = frustumHeight * containerAspect;
+      camera.left = -frustumWidth / 2;
+      camera.right = frustumWidth / 2;
+      camera.top = frustumHeight / 2;
+      camera.bottom = -frustumHeight / 2;
+      camera.updateProjectionMatrix();
+
+      uniforms.resolution.value.set(width, height, 1, 1);
+    };
+
+    if (window.ResizeObserver) {
+      const resizeObserver = new ResizeObserver(() => {
+        handleResize();
+      });
+      resizeObserver.observe(container);
+      resizeObserverRef.current = resizeObserver;
+    } else {
+      window.addEventListener('resize', handleResize);
+    }
+
+    const mouseState = {
+      x: 0,
+      y: 0,
+      prevX: 0,
+      prevY: 0,
+      vX: 0,
+      vY: 0
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = 1 - (e.clientY - rect.top) / rect.height;
+      mouseState.vX = x - mouseState.prevX;
+      mouseState.vY = y - mouseState.prevY;
+      Object.assign(mouseState, { x, y, prevX: x, prevY: y });
+    };
+
+    const handleMouseLeave = () => {
+      if (dataTexture) {
+        dataTexture.needsUpdate = true;
+      }
+      Object.assign(mouseState, {
+        x: 0,
+        y: 0,
+        prevX: 0,
+        prevY: 0,
+        vX: 0,
+        vY: 0
+      });
+    };
+
+    container.addEventListener('mousemove', handleMouseMove);
+    container.addEventListener('mouseleave', handleMouseLeave);
+
+    handleResize();
+
+    const animate = () => {
+      animationIdRef.current = requestAnimationFrame(animate);
+
+      if (!renderer || !scene || !camera) return;
+
+      uniforms.time.value += 0.05;
+
+      if (!(dataTexture.image.data instanceof Float32Array)) {
+        console.error('dataTexture.image.data is not a Float32Array');
+        return;
+      }
+      const data: Float32Array = dataTexture.image.data;
+      for (let i = 0; i < size * size; i++) {
+        data[i * 4] *= relaxation;
+        data[i * 4 + 1] *= relaxation;
+      }
+
+      const gridMouseX = size * mouseState.x;
+      const gridMouseY = size * mouseState.y;
+      const maxDist = size * mouse;
+
+      for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+          const distSq = Math.pow(gridMouseX - i, 2) + Math.pow(gridMouseY - j, 2);
+          if (distSq < maxDist * maxDist) {
+            const index = 4 * (i + size * j);
+            const power = Math.min(maxDist / Math.sqrt(distSq), 10);
+            data[index] += strength * 100 * mouseState.vX * power;
+            data[index + 1] -= strength * 100 * mouseState.vY * power;
+          }
+        }
+      }
+
+      dataTexture.needsUpdate = true;
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    return () => {
+      if (animationIdRef.current) {
+        cancelAnimationFrame(animationIdRef.current);
+      }
+
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+      } else {
+        window.removeEventListener('resize', handleResize);
+      }
+
+      container.removeEventListener('mousemove', handleMouseMove);
+      container.removeEventListener('mouseleave', handleMouseLeave);
+
+      if (renderer) {
+        renderer.dispose();
+        if (container.contains(renderer.domElement)) {
+          container.removeChild(renderer.domElement);
+        }
+      }
+
+      if (geometry) geometry.dispose();
+      if (material) material.dispose();
+      if (dataTexture) dataTexture.dispose();
+      if (uniforms.uTexture.value) uniforms.uTexture.value.dispose();
+
+      sceneRef.current = null;
+      rendererRef.current = null;
+      cameraRef.current = null;
+      planeRef.current = null;
+    };
+  }, [grid, mouse, strength, relaxation, imageSrc]);
 
   return (
-    <>
-      <instancedMesh ref={mesh} args={[undefined, undefined, count]}>
-        <dodecahedronGeometry args={[0.2, 0]} />
-        <meshPhongMaterial color="#444444" emissive="#000000" shininess={50} />
-      </instancedMesh>
-    </>
+    <div
+      ref={containerRef}
+      className={`relative overflow-hidden ${className}`}
+      style={{
+        width: '100%',
+        height: '100%',
+        minWidth: '0',
+        minHeight: '0'
+      }}
+    />
   );
-}
+};
 
-export function GridDistortion() {
-  return (
-    <div className="fixed inset-0 -z-10 bg-background">
-      <Canvas camera={{ position: [0, 0, 15], fov: 60 }}>
-        <fog attach="fog" args={['#080808', 10, 30]} />
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} color="#ffffff" intensity={1} />
-        <Particles />
-      </Canvas>
-    </div>
-  );
-}
+export default GridDistortion;
