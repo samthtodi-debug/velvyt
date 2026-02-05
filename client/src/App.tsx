@@ -27,10 +27,11 @@ function App() {
       <div className="fixed inset-0 z-0 pointer-events-auto">
         <GridDistortion 
           imageSrc={yepImg}
-          grid={10}
+          grid={15}
           mouse={0.1}
           strength={0.15}
           relaxation={0.9}
+          
           className="w-full h-full"
         />
       </div>

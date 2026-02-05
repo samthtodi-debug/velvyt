@@ -3,6 +3,8 @@ import { Link } from "wouter";
 import { ArrowRight } from "lucide-react";
 import SplitText from "@/components/SplitText";
 import CircularText from "@/components/CircularText";
+import ShinyText from '@/components/ShinyText';
+
 
 const handleAnimationComplete = () => {
   console.log("All letters have animated!");
@@ -48,7 +50,7 @@ export default function Home() {
           href="/events"
           className="group inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-xs hover:bg-white/90 transition-all hover:pr-10"
         >
-          Enter The Void
+          Break In
           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
         </Link>
       </motion.div>
@@ -57,7 +59,8 @@ export default function Home() {
       <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-12 text-[10px] text-white/20 font-mono tracking-widest uppercase">
         <span>In Jaipur</span>
       </div>
-
+      {/* 🔥 Shiny TEXT - MIDDLE */}
+      
       {/* 🔥 CIRCULAR TEXT — BOTTOM LEFT */}
       <div className="fixed bottom-6 left-6 z-20">
         <CircularText

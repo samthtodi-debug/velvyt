@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: velvyt-grid-party
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+    disk:
+      name: sqlite-data
+      mountPath: /data
+      sizeGB: 1
