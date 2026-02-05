@@ -13,6 +13,8 @@ import { z } from "zod";
 // Enhance schema for frontend validation
 const formSchema = insertRsvpSchema.extend({
   email: z.string().email("Invalid email address"),
+  phone: z.string().min(10, "Phone number required"),
+  paymentMode: z.string().min(1, "Please select payment mode"),
   eventId: z.coerce.number().min(1, "Please select an event"),
 });
 
@@ -34,6 +36,8 @@ export default function Rsvp() {
       name: "",
       email: "",
       instagramHandle: "",
+      phone: "",
+      paymentMode: "UPI",
       eventId: eventIdParam ? parseInt(eventIdParam) : undefined,
     },
   });
@@ -113,6 +117,47 @@ export default function Rsvp() {
                       value={field.value || ""}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs uppercase tracking-widest text-white/60">Phone Number (WhatsApp)</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="+91 99999 99999"
+                      className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="paymentMode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs uppercase tracking-widest text-white/60">Preferred Payment Mode</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus:ring-0 focus:border-white transition-colors">
+                        <SelectValue placeholder="Select payment mode" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="UPI">UPI / GPay / Paytm</SelectItem>
+                      <SelectItem value="Cash">Cash at Gate</SelectItem>
+                      <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
