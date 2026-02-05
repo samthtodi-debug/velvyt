@@ -51,7 +51,7 @@ export default function Home() {
           as={Link}
           href="/events"
           className="cursor-pointer"
-          color="cyan"
+          color="white"
           speed="3s"
         >
           <div className="flex items-center gap-3 font-bold uppercase tracking-widest text-xs px-4">
