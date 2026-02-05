@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import SplitText from "@/components/SplitText";
 import CircularText from "@/components/CircularText";
 import ShinyText from '@/components/ShinyText';
+import StarBorder from '@/components/StarBorder';
 
 
 const handleAnimationComplete = () => {
@@ -13,8 +14,8 @@ const handleAnimationComplete = () => {
 export default function Home() {
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
-      
-      <motion.div 
+
+      <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
@@ -23,7 +24,7 @@ export default function Home() {
         <p className="text-xs md:text-sm font-mono text-white/40 tracking-[0.5em] mb-6 md:mb-8">
           EST. 2026
         </p>
-        
+
         {/* SPLIT TEXT ONLY FOR VELVYT */}
         <h1 className="text-6xl md:text-9xl font-display font-bold tracking-tighter mb-8 mix-blend-difference overflow-hidden">
           <SplitText
@@ -41,18 +42,23 @@ export default function Home() {
             onLetterAnimationComplete={handleAnimationComplete}
           />
         </h1>
-        
+
         <p className="max-w-md mx-auto text-sm md:text-base text-muted-foreground leading-relaxed mb-12">
           Constant law curation.
         </p>
 
-        <Link 
+        <StarBorder
+          as={Link}
           href="/events"
-          className="group inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-xs hover:bg-white/90 transition-all hover:pr-10"
+          className="cursor-pointer"
+          color="cyan"
+          speed="3s"
         >
-          Break In
-          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-        </Link>
+          <div className="flex items-center gap-3 font-bold uppercase tracking-widest text-xs px-4">
+            Break In
+            <ArrowRight className="w-4 h-4" />
+          </div>
+        </StarBorder>
       </motion.div>
 
       {/* BOTTOM CENTER TEXT */}
@@ -60,7 +66,7 @@ export default function Home() {
         <span>In Jaipur</span>
       </div>
       {/* 🔥 Shiny TEXT - MIDDLE */}
-      
+
       {/* 🔥 CIRCULAR TEXT — BOTTOM LEFT */}
       <div className="fixed bottom-6 left-6 z-20">
         <CircularText
