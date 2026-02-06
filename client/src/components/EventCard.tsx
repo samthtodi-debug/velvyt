@@ -18,14 +18,14 @@ export function EventCard({ event, index }: EventCardProps) {
     >
       <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
         <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
-        
+
         {/* Dynamic Image from Event Data */}
-        <img 
-          src={event.imageUrl} 
+        <img
+          src={event.imageUrl}
           alt={event.title}
           className="h-full w-full object-cover grayscale transition-all duration-700 ease-out group-hover:grayscale-0 group-hover:scale-105"
         />
-        
+
         {event.isExclusive && (
           <div className="absolute top-4 right-4 z-20 px-3 py-1 bg-white text-black text-[10px] font-bold tracking-widest uppercase">
             Exclusive
@@ -45,11 +45,11 @@ export function EventCard({ event, index }: EventCardProps) {
         </p>
       </div>
 
-      <Link 
+      <Link
         href={`/rsvp?event=${event.id}`}
         className="mt-2 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/60 hover:text-white transition-colors"
       >
-        <span>Request Access</span>
+        <span>Book Now</span>
         <span className="block h-[1px] w-8 bg-current transition-all group-hover:w-12" />
       </Link>
     </motion.div>

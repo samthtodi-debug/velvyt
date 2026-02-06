@@ -7,7 +7,7 @@ export function Navigation() {
   const links = [
     { href: "/", label: "Home" },
     { href: "/events", label: "Events" },
-    { href: "/rsvp", label: "RSVP" },
+    { href: "/rsvp", label: "Register" },
   ];
 
   return (
@@ -15,11 +15,11 @@ export function Navigation() {
       <Link href="/" className="text-xl font-display font-bold tracking-[0.2em] text-white hover:opacity-80 transition-opacity">
         VELVYT
       </Link>
-      
+
       <div className="hidden md:flex items-center gap-8">
         {links.map((link) => (
-          <Link 
-            key={link.href} 
+          <Link
+            key={link.href}
             href={link.href}
             className={cn(
               "text-xs font-medium uppercase tracking-widest transition-all duration-300 hover:text-white",

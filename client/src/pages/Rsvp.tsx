@@ -134,7 +134,7 @@ export default function Rsvp() {
         className="w-full max-w-md bg-card/50 backdrop-blur-md border border-white/5 p-8 md:p-12"
       >
         <div className="mb-10 text-center">
-          <h1 className="text-3xl font-display font-bold mb-2">Guest List</h1>
+          <h1 className="text-3xl font-display font-bold mb-2">Registration</h1>
           <p className="text-xs text-muted-foreground uppercase tracking-widest">
             {selectedEvent ? `RSVP for: ${selectedEvent.title}` : "Join the Movement"}
           </p>
@@ -273,7 +273,7 @@ export default function Rsvp() {
               className="w-full bg-white text-black hover:bg-white/90 rounded-none h-12 uppercase text-xs font-bold tracking-widest"
               disabled={createRsvp.isPending}
             >
-              {createRsvp.isPending ? "Processing..." : "Submit Request"}
+              {createRsvp.isPending ? "Processing..." : "Submit Details"}
             </Button>
           </form>
         </Form>
