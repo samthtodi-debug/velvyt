@@ -11,18 +11,26 @@ export function MusicPlayer() {
     const [isOpen, setIsOpen] = useState(false);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const closeTimerRef = useRef<NodeJS.Timeout>();
 
     // Initialize audio
     useEffect(() => {
-        audioRef.current = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=lofi-study-112191.mp3"); // Free lofi track as placeholder
+        // Using a more reliable lo-fi stream or file
+        audioRef.current = new Audio("https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3");
         audioRef.current.loop = true;
         audioRef.current.volume = volume / 100;
+
+        // Add event listeners for error handling
+        const handleError = (e: Event) => console.error("Audio error:", e);
+        audioRef.current.addEventListener('error', handleError);
 
         return () => {
             if (audioRef.current) {
                 audioRef.current.pause();
+                audioRef.current.removeEventListener('error', handleError);
                 audioRef.current = null;
             }
+            if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
         };
     }, []);
 
@@ -30,7 +38,13 @@ export function MusicPlayer() {
     useEffect(() => {
         if (audioRef.current) {
             if (isPlaying) {
-                audioRef.current.play().catch(e => console.log("Audio play failed:", e));
+                const playPromise = audioRef.current.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.error("Autoplay prevented or failed:", error);
+                        // Optional: setIsPlaying(false) if we want to reflect that it failed
+                    });
+                }
             } else {
                 audioRef.current.pause();
             }
@@ -41,26 +55,46 @@ export function MusicPlayer() {
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.volume = isMuted ? 0 : volume / 100;
-            if (!isMuted && audioRef.current.volume === 0 && volume > 0) {
-                // audioRef.current.volume = volume / 100; 
-            }
         }
     }, [volume, isMuted]);
+
+    // Auto-close Logic
+    const resetCloseTimer = () => {
+        if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+        if (isOpen) {
+            closeTimerRef.current = setTimeout(() => {
+                setIsOpen(false);
+            }, 1500); // 1.5 seconds
+        }
+    };
+
+    useEffect(() => {
+        if (isOpen) {
+            resetCloseTimer();
+        } else {
+            if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+        }
+    }, [isOpen]);
 
     const toggleMute = () => setIsMuted(!isMuted);
 
     return (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end pointer-events-auto">
+        <div
+            className="fixed bottom-6 right-6 z-50 flex flex-col items-end pointer-events-auto"
+            onMouseEnter={resetCloseTimer}
+            onMouseMove={resetCloseTimer}
+            onMouseLeave={() => isOpen && resetCloseTimer()}
+        >
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
                         initial={{ opacity: 0, y: 20, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.9 }}
-                        className="mb-4 bg-black/40 backdrop-blur-md border border-white/10 p-4 rounded-xl w-64 shadow-2xl"
+                        className="mb-4 bg-black/60 backdrop-blur-xl border border-white/20 p-4 rounded-xl w-64 shadow-2xl"
                     >
-                        <div className="flex items-center justify-between mb-3 text-white/80">
-                            <span className="text-xs font-medium tracking-widest uppercase">Volume</span>
+                        <div className="flex items-center justify-between mb-3 text-white/90">
+                            <span className="text-xs font-bold tracking-widest uppercase">Volume</span>
                             <span className="text-xs font-mono">{isMuted ? "0" : volume}%</span>
                         </div>
 
@@ -69,6 +103,7 @@ export function MusicPlayer() {
                             onChange={(v) => {
                                 setVolume(v);
                                 if (isMuted && v > 0) setIsMuted(false);
+                                resetCloseTimer();
                             }}
                             className="mb-2"
                         />
@@ -76,12 +111,12 @@ export function MusicPlayer() {
                 )}
             </AnimatePresence>
 
-            <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md border border-white/10 p-2 rounded-full shadow-lg">
+            <div className="flex items-center gap-2 bg-black/60 backdrop-blur-xl border border-white/20 p-2 rounded-full shadow-lg hover:bg-black/70 transition-colors">
                 {/* Play/Pause Button */}
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="rounded-full h-10 w-10 text-white hover:bg-white/10 hover:text-white"
+                    className="rounded-full h-10 w-10 text-white hover:bg-white/20 hover:text-white transition-all"
                     onClick={() => setIsPlaying(!isPlaying)}
                 >
                     {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
@@ -91,7 +126,7 @@ export function MusicPlayer() {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="rounded-full h-10 w-10 text-white hover:bg-white/10 hover:text-white"
+                    className="rounded-full h-10 w-10 text-white hover:bg-white/20 hover:text-white transition-all"
                     onClick={() => setIsOpen(!isOpen)}
                 >
                     {isMuted || volume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
