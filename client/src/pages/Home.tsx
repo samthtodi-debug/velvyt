@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { ArrowRight } from "lucide-react";
 import SplitText from "@/components/SplitText";
 import CircularText from "@/components/CircularText";
@@ -12,6 +13,17 @@ const handleAnimationComplete = () => {
 };
 
 export default function Home() {
+  const [_, setLocation] = useLocation();
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  const handleBreakIn = () => {
+    setIsNavigating(true);
+    // Add a small delay for effect/cleanup
+    setTimeout(() => {
+      setLocation("/events");
+    }, 800);
+  };
+
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
 
@@ -48,15 +60,21 @@ export default function Home() {
         </p>
 
         <StarBorder
-          as={Link}
-          href="/events"
+          as="button"
+          onClick={handleBreakIn}
           className="cursor-pointer"
           color="white"
           speed="3s"
         >
           <div className="flex items-center gap-3 font-bold uppercase tracking-widest text-xs px-4">
-            Break In
-            <ArrowRight className="w-4 h-4" />
+            {isNavigating ? (
+              "INITIALIZING..."
+            ) : (
+              <>
+                Break In
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </div>
         </StarBorder>
       </motion.div>

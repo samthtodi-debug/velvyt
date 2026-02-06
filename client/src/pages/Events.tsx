@@ -8,14 +8,16 @@ export default function Events() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-px h-24 bg-gradient-to-b from-transparent via-white to-transparent animate-pulse" />
+        <div className="text-white font-mono animate-pulse tracking-widest text-sm">
+          LOADING EVENT DATA...
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen pt-32 pb-20 px-6 md:px-12 max-w-7xl mx-auto">
-      <motion.header 
+      <motion.header
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="mb-20 flex flex-col md:flex-row md:items-end justify-between gap-8"
