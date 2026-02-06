@@ -116,7 +116,7 @@ export default function Home() {
       {/* 🔥 Shiny TEXT - MIDDLE */}
 
       {/* 🔥 CIRCULAR TEXT — BOTTOM LEFT */}
-      <div className="fixed bottom-6 left-6 z-20">
+      <div className="fixed bottom-6 left-6 z-20 scale-50 origin-bottom-left">
         <CircularText
           text="Instagram"
           onHover="speedUp"
