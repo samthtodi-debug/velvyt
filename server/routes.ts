@@ -162,7 +162,7 @@ async function seedDatabase() {
       if (event.title === "Midnight Mirage") {
         const updates: any = {};
         if (event.imageUrl !== mirageImg) updates.imageUrl = mirageImg;
-        // Check if date needs update (simple eq check might fail on obj reference so we just set it)
+        // Check if date needs update
         const comingSoonDate = new Date("2099-01-01T00:00:00.000Z");
         if (event.date.getTime() !== comingSoonDate.getTime()) {
           updates.date = comingSoonDate;

@@ -7,7 +7,7 @@ import {
   rsvps,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 
 export interface IStorage {
   getEvents(): Promise<Event[]>;
@@ -20,7 +20,7 @@ export interface IStorage {
 // TEMP: in-memory storage (NO DATABASE)
 export class DatabaseStorage implements IStorage {
   async getEvents(): Promise<Event[]> {
-    return await db.select().from(events);
+    return await db.select().from(events).orderBy(asc(events.date));
   }
 
   async getEvent(id: number): Promise<Event | undefined> {
