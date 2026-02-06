@@ -42,12 +42,82 @@ export default function Rsvp() {
     },
   });
 
-  function onSubmit(data: FormValues) {
-    createRsvp.mutate(data, {
-      onSuccess: () => {
-        form.reset();
-      }
+  // Load Razorpay SDK
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
     });
+  };
+
+  async function onSubmit(data: FormValues) {
+    if (data.paymentMode === "UPI") {
+      // 1. Load SDK
+      const isLoaded = await loadRazorpay();
+      if (!isLoaded) {
+        alert("Razorpay SDK failed to load. Are you online?");
+        return;
+      }
+
+      // 2. Create RSVP first (to get ID/record)
+      createRsvp.mutate(data, {
+        onSuccess: async (newRsvp) => {
+          // 3. Create Order
+          try {
+            const response = await fetch("/api/create-payment-order", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ amount: 50000 }), // 500 INR
+            });
+            const order = await response.json();
+
+            // 4. Open Razorpay
+            const options = {
+              key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_YOUR_TEST_KEY_HERE", // Replace with env var
+              amount: order.amount,
+              currency: order.currency,
+              name: "Velvyt Events",
+              description: "Event Access Pass",
+              image: "/images/genesis.jpg", // Use one of the event images
+              order_id: order.id,
+              handler: function (response: any) {
+                // Here you would verify payment on backend
+                alert(`Payment Successful! Payment ID: ${response.razorpay_payment_id}`);
+                form.reset();
+              },
+              prefill: {
+                name: data.name,
+                email: data.email,
+                contact: data.phone,
+              },
+              theme: {
+                color: "#000000",
+              },
+            };
+
+            const rzp1 = new (window as any).Razorpay(options);
+            rzp1.on("payment.failed", function (response: any) {
+              alert(response.error.description);
+            });
+            rzp1.open();
+          } catch (error) {
+            console.error("Payment setup failed:", error);
+            alert("Could not initiate payment.");
+          }
+        },
+      });
+    } else {
+      // Normal submission for Cash/Other
+      createRsvp.mutate(data, {
+        onSuccess: () => {
+          form.reset();
+          alert("RSVP Submitted Successfully!");
+        },
+      });
+    }
   }
 
   return (
