@@ -1,8 +1,5 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { Link, useLocation } from "wouter";
-import { useQueryClient } from "@tanstack/react-query";
-import { api } from "@shared/routes";
+import { Link } from "wouter";
 import { ArrowRight } from "lucide-react";
 import SplitText from "@/components/SplitText";
 import CircularText from "@/components/CircularText";
@@ -15,29 +12,6 @@ const handleAnimationComplete = () => {
 };
 
 export default function Home() {
-  const [_, setLocation] = useLocation();
-  const [isNavigating, setIsNavigating] = useState(false);
-  const queryClient = useQueryClient();
-
-  const handleBreakIn = () => {
-    setIsNavigating(true);
-
-    // Start prefetching immediately
-    queryClient.prefetchQuery({
-      queryKey: [api.events.list.path],
-      queryFn: async () => {
-        const res = await fetch(api.events.list.path);
-        if (!res.ok) throw new Error("Failed to load events");
-        return api.events.list.responses[200].parse(await res.json());
-      },
-    });
-
-    // Add a longer delay to allow prefetch to complete and show the "Upcoming" transition
-    setTimeout(() => {
-      setLocation("/events");
-    }, 2000);
-  };
-
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
 
@@ -74,21 +48,15 @@ export default function Home() {
         </p>
 
         <StarBorder
-          as="button"
-          onClick={handleBreakIn}
+          as={Link}
+          href="/events"
           className="cursor-pointer"
           color="white"
           speed="3s"
         >
           <div className="flex items-center gap-3 font-bold uppercase tracking-widest text-xs px-4">
-            {isNavigating ? (
-              "INITIALIZING..."
-            ) : (
-              <>
-                Break In
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
+            Break In
+            <ArrowRight className="w-4 h-4" />
           </div>
         </StarBorder>
       </motion.div>
