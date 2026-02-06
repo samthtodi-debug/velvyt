@@ -4,6 +4,8 @@ import { ArrowRight } from "lucide-react";
 import SplitText from "@/components/SplitText";
 import CircularText from "@/components/CircularText";
 import ShinyText from '@/components/ShinyText';
+import { useQueryClient } from "@tanstack/react-query";
+import { api } from "@shared/routes";
 import StarBorder from '@/components/StarBorder';
 
 
@@ -12,6 +14,19 @@ const handleAnimationComplete = () => {
 };
 
 export default function Home() {
+  const queryClient = useQueryClient();
+
+  const handleMouseEnter = () => {
+    queryClient.prefetchQuery({
+      queryKey: [api.events.list.path],
+      queryFn: async () => {
+        const res = await fetch(api.events.list.path);
+        if (!res.ok) throw new Error("Failed to load events");
+        return api.events.list.responses[200].parse(await res.json());
+      },
+    });
+  };
+
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
 
@@ -50,6 +65,7 @@ export default function Home() {
         <StarBorder
           as={Link}
           href="/events"
+          onMouseEnter={handleMouseEnter}
           className="cursor-pointer"
           color="white"
           speed="3s"
