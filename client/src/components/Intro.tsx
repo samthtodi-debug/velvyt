@@ -17,13 +17,20 @@ export function Intro({ onEnter }: { onEnter: () => void }) {
                     exit={{ opacity: 0, pointerEvents: "none" }}
                     transition={{ duration: 1, ease: "easeOut" }}
                     onClick={handleEnter}
-                    className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center cursor-pointer"
+                    className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center cursor-pointer overflow-hidden"
                 >
+                    {/* Background Wallpaper */}
+                    <div
+                        className="absolute inset-0 z-0 opacity-40 bg-cover bg-center"
+                        style={{ backgroundImage: 'url("/images/shadows.jpg")' }}
+                    />
+                    <div className="absolute inset-0 z-0 bg-black/60" /> {/* Overlay for text readability */}
+
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 1.5, ease: "easeOut" }}
-                        className="text-center"
+                        className="relative z-10 text-center"
                     >
                         <p className="text-white/40 font-mono text-xs tracking-[0.5em] mb-4">
                             WELCOME TO
