@@ -5,7 +5,7 @@ import { Volume2, VolumeX, Music, Pause, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function MusicPlayer() {
-    const [isPlaying, setIsPlaying] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(true);
     const [volume, setVolume] = useState(50);
     const [isMuted, setIsMuted] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +19,31 @@ export function MusicPlayer() {
         audioRef.current = new Audio("https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3");
         audioRef.current.loop = true;
         audioRef.current.volume = volume / 100;
+
+        // Try to play immediately
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log("Autoplay blocked by browser policy. Waiting for user interaction.");
+                setIsPlaying(false);
+
+                // Add one-time listener to start playing on any interaction
+                const enableAudio = () => {
+                    if (audioRef.current) {
+                        audioRef.current.play()
+                            .then(() => {
+                                setIsPlaying(true);
+                                document.removeEventListener('click', enableAudio);
+                                document.removeEventListener('keydown', enableAudio);
+                            })
+                            .catch(e => console.error("Playback failed:", e));
+                    }
+                };
+
+                document.addEventListener('click', enableAudio);
+                document.addEventListener('keydown', enableAudio);
+            });
+        }
 
         // Add event listeners for error handling
         const handleError = (e: Event) => console.error("Audio error:", e);
@@ -42,7 +67,8 @@ export function MusicPlayer() {
                 if (playPromise !== undefined) {
                     playPromise.catch(error => {
                         console.error("Autoplay prevented or failed:", error);
-                        // Optional: setIsPlaying(false) if we want to reflect that it failed
+                        // If blocked here, we might want to set isPlaying false, 
+                        // but usually the initial effect catches the first block.
                     });
                 }
             } else {
