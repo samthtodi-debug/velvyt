@@ -35,7 +35,7 @@ function App() {
         // The click itself triggers the MusicPlayer's document listener
         // We can also dispatch a custom event if needed
         window.dispatchEvent(new Event('intro-enter'));
-        sessionStorage.setItem('intro-shown', 'true');
+        (window as any).introDismissed = true;
       }} />
       <div className="fixed inset-0 z-0 pointer-events-auto">
         <GridDistortion

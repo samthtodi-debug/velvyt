@@ -17,9 +17,9 @@ const handleAnimationComplete = () => {
 export default function Home() {
   const queryClient = useQueryClient();
   const [hasAccess, setHasAccess] = React.useState(() => {
-    // If running in browser check storage, else false
+    // Check in-memory flag (resets on reload)
     if (typeof window !== 'undefined') {
-      return !!sessionStorage.getItem('intro-shown');
+      return !!(window as any).introDismissed;
     }
     return false;
   });
