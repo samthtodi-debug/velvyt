@@ -64,9 +64,14 @@ export async function registerRoutes(
 
 async function seedDatabase() {
   const existingEvents = await storage.getEvents();
+
+  const genesisImg = "/images/genesis.jpg";
+  const mirageImg = "/images/mirage.jpg";
+  const shadowsImg = "/images/shadows.jpg";
+
   if (existingEvents.length === 0) {
     const today = new Date();
-    
+
     // Event 1: Next Friday
     const event1Date = new Date(today);
     event1Date.setDate(today.getDate() + (5 + 7 - today.getDay()) % 7);
@@ -82,7 +87,7 @@ async function seedDatabase() {
       description: "The beginning of a new era. Experience the unseen.",
       date: event1Date,
       location: "Secret Warehouse, Jaipur",
-      imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80",
+      imageUrl: genesisImg,
       isExclusive: true,
     });
 
@@ -91,17 +96,31 @@ async function seedDatabase() {
       description: "A rooftop experience under the stars. High fashion, high altitude.",
       date: event2Date,
       location: "Ur mum's place, Jaipur",
-      imageUrl: "https://images.unsplash.com/photo-1514525253440-b393452e8d26?auto=format&fit=crop&q=80",
+      imageUrl: mirageImg,
       isExclusive: false,
     });
-    
+
     await storage.createEvent({
       title: "Neon Shadows",
       description: "Underground vibes. Strict dress code.",
       date: new Date(today.setMonth(today.getMonth() + 2)),
       location: "The Bunker, Jaipur",
-      imageUrl: "https://images.unsplash.com/photo-1545128485-c400e7702796?auto=format&fit=crop&q=80",
+      imageUrl: shadowsImg,
       isExclusive: true,
     });
+  } else {
+    // Update existing events with new local images if they match titles
+    for (const event of existingEvents) {
+      if (event.title === "Velvyt Launch: Genesis" && event.imageUrl !== genesisImg) {
+        await storage.updateEvent(event.id, { imageUrl: genesisImg });
+        console.log(`Updated image for ${event.title}`);
+      } else if (event.title === "Midnight Mirage" && event.imageUrl !== mirageImg) {
+        await storage.updateEvent(event.id, { imageUrl: mirageImg });
+        console.log(`Updated image for ${event.title}`);
+      } else if (event.title === "Neon Shadows" && event.imageUrl !== shadowsImg) {
+        await storage.updateEvent(event.id, { imageUrl: shadowsImg });
+        console.log(`Updated image for ${event.title}`);
+      }
+    }
   }
 }

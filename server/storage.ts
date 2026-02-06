@@ -13,6 +13,7 @@ export interface IStorage {
   getEvents(): Promise<Event[]>;
   getEvent(id: number): Promise<Event | undefined>;
   createEvent(event: InsertEvent): Promise<Event>;
+  updateEvent(id: number, event: Partial<InsertEvent>): Promise<Event | undefined>;
   createRsvp(rsvp: InsertRsvp): Promise<Rsvp>;
 }
 
@@ -41,6 +42,15 @@ export class DatabaseStorage implements IStorage {
       .values(insertRsvp)
       .returning();
     return rsvp;
+  }
+
+  async updateEvent(id: number, updateData: Partial<InsertEvent>): Promise<Event | undefined> {
+    const [updatedEvent] = await db
+      .update(events)
+      .set(updateData)
+      .where(eq(events.id, id))
+      .returning();
+    return updatedEvent;
   }
 }
 
