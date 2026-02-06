@@ -16,22 +16,24 @@ export function EventCard({ event, index }: EventCardProps) {
       transition={{ delay: index * 0.1, duration: 0.6 }}
       className="group relative flex flex-col gap-4"
     >
-      <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
-        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
+      <Link href={`/rsvp?event=${event.id}`}>
+        <div className="relative aspect-[3/4] overflow-hidden bg-secondary cursor-pointer">
+          <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
 
-        {/* Dynamic Image from Event Data */}
-        <img
-          src={event.imageUrl}
-          alt={event.title}
-          className="h-full w-full object-cover grayscale transition-all duration-700 ease-out group-hover:grayscale-0 group-hover:scale-105"
-        />
+          {/* Dynamic Image from Event Data */}
+          <img
+            src={event.imageUrl}
+            alt={event.title}
+            className="h-full w-full object-cover grayscale transition-all duration-700 ease-out group-hover:grayscale-0 group-hover:scale-105"
+          />
 
-        {event.isExclusive && (
-          <div className="absolute top-4 right-4 z-20 px-3 py-1 bg-white text-black text-[10px] font-bold tracking-widest uppercase">
-            Exclusive
-          </div>
-        )}
-      </div>
+          {event.isExclusive && (
+            <div className="absolute top-4 right-4 z-20 px-3 py-1 bg-white text-black text-[10px] font-bold tracking-widest uppercase">
+              Exclusive
+            </div>
+          )}
+        </div>
+      </Link>
 
       <div className="flex flex-col gap-1">
         <div className="text-xs font-mono text-muted-foreground">
