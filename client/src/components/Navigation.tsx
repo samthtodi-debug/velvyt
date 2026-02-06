@@ -1,8 +1,24 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
 export function Navigation() {
   const [location] = useLocation();
+  const [clickCount, setClickCount] = useState(0);
+
+  useEffect(() => {
+    if (clickCount === 0) return;
+    const timer = setTimeout(() => setClickCount(0), 2000); // Reset after 2 seconds
+    return () => clearTimeout(timer);
+  }, [clickCount]);
+
+  const handleLogoClick = () => {
+    const newCount = clickCount + 1;
+    setClickCount(newCount);
+    if (newCount === 10) {
+      window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // Secret Website
+    }
+  };
 
   const links = [
     { href: "/", label: "Home" },
@@ -12,7 +28,11 @@ export function Navigation() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-6 py-6 md:px-12 backdrop-blur-sm">
-      <Link href="/" className="text-xl font-display font-bold tracking-[0.2em] text-white hover:opacity-80 transition-opacity">
+      <Link
+        href="/"
+        className="text-xl font-display font-bold tracking-[0.2em] text-white hover:opacity-80 transition-opacity select-none"
+        onClick={handleLogoClick}
+      >
         VELVYT
       </Link>
 
