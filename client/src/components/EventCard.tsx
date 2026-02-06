@@ -35,7 +35,7 @@ export function EventCard({ event, index }: EventCardProps) {
 
       <div className="flex flex-col gap-1">
         <div className="text-xs font-mono text-muted-foreground">
-          {format(new Date(event.date), "MM.dd.yyyy — HH:mm")}
+          {new Date(event.date).getFullYear() === 2099 ? "Coming Soon" : format(new Date(event.date), "MM.dd.yyyy — HH:mm")}
         </div>
         <h3 className="text-xl md:text-2xl text-white font-medium group-hover:text-white/80 transition-colors">
           {event.title}

@@ -143,16 +143,42 @@ async function seedDatabase() {
     });
   } else {
     // Update existing events with new local images if they match titles
+    // Update existing events
     for (const event of existingEvents) {
       if (event.title === "Velvyt Launch: Genesis" && event.imageUrl !== genesisImg) {
         await storage.updateEvent(event.id, { imageUrl: genesisImg });
-        console.log(`Updated image for ${event.title}`);
-      } else if (event.title === "Midnight Mirage" && event.imageUrl !== mirageImg) {
-        await storage.updateEvent(event.id, { imageUrl: mirageImg });
-        console.log(`Updated image for ${event.title}`);
-      } else if (event.title === "Neon Shadows" && event.imageUrl !== shadowsImg) {
-        await storage.updateEvent(event.id, { imageUrl: shadowsImg });
-        console.log(`Updated image for ${event.title}`);
+      }
+
+      if (event.title === "Midnight Mirage") {
+        const updates: any = {};
+        if (event.imageUrl !== mirageImg) updates.imageUrl = mirageImg;
+        // Check if date needs update (simple eq check might fail on obj reference so we just set it)
+        const comingSoonDate = new Date("2099-01-01T00:00:00.000Z");
+        if (event.date.getTime() !== comingSoonDate.getTime()) {
+          updates.date = comingSoonDate;
+        }
+
+        if (Object.keys(updates).length > 0) {
+          await storage.updateEvent(event.id, updates);
+          console.log(`Updated details for ${event.title}`);
+        }
+      }
+
+      if (event.title === "Neon Shadows") {
+        const updates: any = {};
+        if (event.imageUrl !== shadowsImg) updates.imageUrl = shadowsImg;
+        const comingSoonDate = new Date("2099-01-01T00:00:00.000Z");
+        if (event.date.getTime() !== comingSoonDate.getTime()) {
+          updates.date = comingSoonDate;
+        }
+        if (event.location !== "Jaipur") {
+          updates.location = "Jaipur";
+        }
+
+        if (Object.keys(updates).length > 0) {
+          await storage.updateEvent(event.id, updates);
+          console.log(`Updated details for ${event.title}`);
+        }
       }
     }
   }
