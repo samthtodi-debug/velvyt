@@ -3,25 +3,34 @@ import { motion } from "framer-motion";
 export default function Rules() {
     const rules = [
         {
-            title: "Dress Code",
-            description: "Strictly adhere to the event theme. No casuals. Failure to comply leads to denied entry.",
+            title: "Zero Drama",
+            description: "Zero harassment, or you will get harassed back.",
         },
         {
-            title: "Respect",
-            description: "Any form of harassment or disrespect towards guests or staff will result in immediate removal.",
+            title: "Hands. to. Yourself.",
+            description: "Thrashing will not be tolerated, and will result in penalisation",
         },
         {
-            title: "Zero Tolerance",
-            description: "Possession of illegal substances or weapons is prohibited. Security checks are mandatory.",
+            title: "Clocks Exist",
+            description: "Arrive on time, or within the designated window. Do not show up early or late.",
         },
         {
-            title: "Privacy",
-            description: "What happens in Velvyt, stays in Velvyt. Respect the privacy of high-profile guests.",
+            title: "Don't Be That Person",
+            description: "Do not start arguments, use offensive language, or over-flirt.",
         },
         {
-            title: "Rights of Admission",
-            description: "The management reserves the right of admission at all times."
+            title: "Manners Matter",
+            description: "Thank the host in the bathroom (ladies, of course 🤭)."
+        },
+        {
+            title: "Dress Like You Meant It",
+            description: "Dress code is vital, so don't cry if your baggy sweatpants aren't getting compliments."
+        },
+        {
+            title: "Phones Down",
+            description: "Keep your phone away from the table, to focus on social interaction (then you wonder why you don't get invited to parties anymore)."
         }
+
     ];
 
     return (
