@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ElasticSlider } from "./ElasticSlider";
+import ElasticSlider from "./ElasticSlider";
 import { motion, AnimatePresence } from "framer-motion";
 import { Volume2, VolumeX, Music, Pause, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -93,19 +93,18 @@ export function MusicPlayer() {
                         exit={{ opacity: 0, y: 20, scale: 0.9 }}
                         className="mb-4 bg-black/60 backdrop-blur-xl border border-white/20 p-4 rounded-xl w-64 shadow-2xl"
                     >
-                        <div className="flex items-center justify-between mb-3 text-white/90">
-                            <span className="text-xs font-bold tracking-widest uppercase">Volume</span>
-                            <span className="text-xs font-mono">{isMuted ? "0" : volume}%</span>
-                        </div>
-
                         <ElasticSlider
-                            value={isMuted ? 0 : volume}
+                            defaultValue={isMuted ? 0 : volume}
+                            startingValue={0}
+                            maxValue={100}
+                            isStepped={false}
+                            stepSize={1}
                             onChange={(v) => {
                                 setVolume(v);
                                 if (isMuted && v > 0) setIsMuted(false);
                                 resetCloseTimer();
                             }}
-                            className="mb-2"
+                            className="mb-1"
                         />
                     </motion.div>
                 )}
