@@ -11,6 +11,7 @@ import Rsvp from "@/pages/Rsvp";
 import NotFound from "@/pages/not-found";
 import yepImg from "@/assets/yep.png";
 import { MusicPlayer } from "@/components/MusicPlayer";
+import { Intro } from "@/components/Intro";
 
 function Router() {
   const [location] = useLocation();
@@ -30,6 +31,11 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <Intro onEnter={() => {
+        // The click itself triggers the MusicPlayer's document listener
+        // We can also dispatch a custom event if needed
+        window.dispatchEvent(new Event('intro-enter'));
+      }} />
       <div className="fixed inset-0 z-0 pointer-events-auto">
         <GridDistortion
           imageSrc={yepImg}
