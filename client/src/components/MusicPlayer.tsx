@@ -16,7 +16,8 @@ export function MusicPlayer() {
     // Initialize audio
     useEffect(() => {
         // Using a more reliable lo-fi stream or file
-        audioRef.current = new Audio("https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3");
+        // Using local audio file
+        audioRef.current = new Audio("/audio/music.mp3");
         audioRef.current.loop = true;
         audioRef.current.volume = volume / 100;
 
