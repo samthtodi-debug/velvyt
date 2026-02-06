@@ -117,12 +117,19 @@ export default function Home() {
 
       {/* 🔥 CIRCULAR TEXT — BOTTOM LEFT */}
       <div className="fixed bottom-6 left-6 z-20 scale-75 origin-bottom-left">
-        <CircularText
-          text="Instagram"
-          onHover="speedUp"
-          spinDuration={43}
-          className="text-white/60 text-xs"
-        />
+        <a
+          href="https://www.instagram.com/velvyt.co/?utm_source=ig_web_button_share_sheet"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full h-full"
+        >
+          <CircularText
+            text="Instagram"
+            onHover="speedUp"
+            spinDuration={43}
+            className="text-white/60 text-xs"
+          />
+        </a>
       </div>
 
     </motion.div >
