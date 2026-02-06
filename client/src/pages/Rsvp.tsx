@@ -121,7 +121,13 @@ export default function Rsvp() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 pt-24">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen flex items-center justify-center p-6 pt-24"
+    >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -272,6 +278,6 @@ export default function Rsvp() {
           </form>
         </Form>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }

@@ -28,7 +28,11 @@ export default function Home() {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+    <motion.div
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+    >
 
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
@@ -93,6 +97,6 @@ export default function Home() {
         />
       </div>
 
-    </div>
+    </motion.div>
   );
 }
