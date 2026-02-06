@@ -36,7 +36,17 @@ export default function Home() {
       queryFn: async () => {
         const res = await fetch(api.events.list.path);
         if (!res.ok) throw new Error("Failed to load events");
-        return api.events.list.responses[200].parse(await res.json());
+        const data = api.events.list.responses[200].parse(await res.json());
+
+        // Preload images aggressively
+        data.forEach((event) => {
+          if (event.imageUrl) {
+            const img = new Image();
+            img.src = event.imageUrl;
+          }
+        });
+
+        return data;
       },
     });
   };
