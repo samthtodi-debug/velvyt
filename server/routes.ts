@@ -105,10 +105,8 @@ async function seedDatabase() {
   if (existingEvents.length === 0) {
     const today = new Date();
 
-    // Event 1: Next Friday
-    const event1Date = new Date(today);
-    event1Date.setDate(today.getDate() + (5 + 7 - today.getDay()) % 7);
-    event1Date.setHours(22, 0, 0, 0);
+    // Event 1: Genesis (updated)
+    const event1Date = new Date("2026-03-14T18:00:00+05:30");
 
     // Event 2: A month later
     const event2Date = new Date(today);
@@ -145,8 +143,20 @@ async function seedDatabase() {
     // Update existing events with new local images if they match titles
     // Update existing events
     for (const event of existingEvents) {
-      if (event.title === "Velvyt Launch: Genesis" && event.imageUrl !== genesisImg) {
-        await storage.updateEvent(event.id, { imageUrl: genesisImg });
+      if (event.title === "Velvyt Launch: Genesis") {
+        const updates: any = {};
+        if (event.imageUrl !== genesisImg) updates.imageUrl = genesisImg;
+
+        // Update date to 03.14.26 6:00 PM IST
+        const genesisDate = new Date("2026-03-14T18:00:00+05:30");
+        if (event.date.getTime() !== genesisDate.getTime()) {
+          updates.date = genesisDate;
+        }
+
+        if (Object.keys(updates).length > 0) {
+          await storage.updateEvent(event.id, updates);
+          console.log(`Updated details for ${event.title}`);
+        }
       }
 
       if (event.title === "Midnight Mirage") {

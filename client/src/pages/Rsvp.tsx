@@ -114,7 +114,7 @@ export default function Rsvp() {
       createRsvp.mutate(data, {
         onSuccess: () => {
           form.reset();
-          alert("RSVP Submitted Successfully!");
+          alert("Details Submitted Successfully!");
         },
       });
     }
@@ -136,7 +136,7 @@ export default function Rsvp() {
         <div className="mb-10 text-center">
           <h1 className="text-3xl font-display font-bold mb-2">Registration</h1>
           <p className="text-xs text-muted-foreground uppercase tracking-widest">
-            {selectedEvent ? `RSVP for: ${selectedEvent.title}` : "Join the Movement"}
+            {selectedEvent ? `For ${selectedEvent.title}` : "Join the Movement"}
           </p>
         </div>
 
@@ -187,7 +187,7 @@ export default function Rsvp() {
                   <FormLabel className="text-xs uppercase tracking-widest text-white/60">Instagram</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="@username"
+                      placeholder="@velvyt.co"
                       className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
                       {...field}
                       value={field.value || ""}
