@@ -5,16 +5,6 @@ import { motion } from "framer-motion";
 export default function Events() {
   const { data: events, isLoading } = useEvents();
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-white font-mono animate-pulse tracking-widest text-sm">
-          LOADING EVENT DATA...
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen pt-32 pb-20 px-6 md:px-12 max-w-7xl mx-auto">
       <motion.header
@@ -30,17 +20,25 @@ export default function Events() {
         </div>
       </motion.header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-        {events?.map((event, i) => (
-          <EventCard key={event.id} event={event} index={i} />
-        ))}
-
-        {!events?.length && (
-          <div className="col-span-full py-20 text-center border border-white/5">
-            <p className="text-white/40 font-mono text-sm">NO EVENTS SCHEDULED</p>
+      {isLoading ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="text-white font-mono animate-pulse tracking-widest text-sm">
+            LOADING EVENT DATA...
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+          {events?.map((event, i) => (
+            <EventCard key={event.id} event={event} index={i} />
+          ))}
+
+          {!events?.length && (
+            <div className="col-span-full py-20 text-center border border-white/5">
+              <p className="text-white/40 font-mono text-sm">NO EVENTS SCHEDULED</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

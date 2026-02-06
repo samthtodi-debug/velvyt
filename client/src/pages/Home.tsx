@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useLocation } from "wouter";
+import { useQueryClient } from "@tanstack/react-query";
+import { api } from "@shared/routes";
 import { ArrowRight } from "lucide-react";
 import SplitText from "@/components/SplitText";
 import CircularText from "@/components/CircularText";
@@ -15,13 +17,25 @@ const handleAnimationComplete = () => {
 export default function Home() {
   const [_, setLocation] = useLocation();
   const [isNavigating, setIsNavigating] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleBreakIn = () => {
     setIsNavigating(true);
-    // Add a small delay for effect/cleanup
+
+    // Start prefetching immediately
+    queryClient.prefetchQuery({
+      queryKey: [api.events.list.path],
+      queryFn: async () => {
+        const res = await fetch(api.events.list.path);
+        if (!res.ok) throw new Error("Failed to load events");
+        return api.events.list.responses[200].parse(await res.json());
+      },
+    });
+
+    // Add a longer delay to allow prefetch to complete and show the "Upcoming" transition
     setTimeout(() => {
       setLocation("/events");
-    }, 800);
+    }, 2000);
   };
 
   return (
