@@ -23,6 +23,7 @@ export function Navigation() {
   const links = [
     { href: "/", label: "Home" },
     { href: "/events", label: "Events" },
+    { href: "/rules", label: "Rules" },
     { href: "/rsvp", label: "Register" },
   ];
 

@@ -8,6 +8,7 @@ import GridDistortion from "@/components/GridDistortion";
 import { Navigation } from "@/components/Navigation";
 import Home from "@/pages/Home";
 import Events from "@/pages/Events";
+import Rules from "@/pages/Rules";
 import Rsvp from "@/pages/Rsvp";
 import NotFound from "@/pages/not-found";
 import yepImg from "@/assets/yep.png";
@@ -29,6 +30,7 @@ function Router() {
       <Switch location={location} key={location}>
         <Route path="/" component={Home} />
         <Route path="/events" component={Events} />
+        <Route path="/rules" component={Rules} />
         <Route path="/rsvp" component={Rsvp} />
         <Route component={NotFound} />
       </Switch>

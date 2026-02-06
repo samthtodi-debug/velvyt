@@ -116,7 +116,7 @@ export default function Home() {
       {/* 🔥 Shiny TEXT - MIDDLE */}
 
       {/* 🔥 CIRCULAR TEXT — BOTTOM LEFT */}
-      <div className="fixed bottom-6 left-6 z-20 scale-75 origin-bottom-left">
+      <div className="fixed bottom-6 left-6 z-[60] scale-75 origin-bottom-left pointer-events-auto">
         <a
           href="https://www.instagram.com/velvyt.co/?utm_source=ig_web_button_share_sheet"
           target="_blank"
