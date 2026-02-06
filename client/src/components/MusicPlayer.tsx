@@ -20,30 +20,38 @@ export function MusicPlayer() {
         audioRef.current.loop = true;
         audioRef.current.volume = volume / 100;
 
-        // Try to play immediately
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-            playPromise.catch(error => {
-                console.log("Autoplay blocked by browser policy. Waiting for user interaction.");
+        // Attempt autoplay
+        const attemptPlay = async () => {
+            if (!audioRef.current) return;
+            try {
+                await audioRef.current.play();
+                setIsPlaying(true);
+            } catch (error) {
+                console.log("Autoplay blocked. Waiting for interaction...");
                 setIsPlaying(false);
 
-                // Add one-time listener to start playing on any interaction
-                const enableAudio = () => {
-                    if (audioRef.current) {
-                        audioRef.current.play()
-                            .then(() => {
-                                setIsPlaying(true);
-                                document.removeEventListener('click', enableAudio);
-                                document.removeEventListener('keydown', enableAudio);
-                            })
-                            .catch(e => console.error("Playback failed:", e));
+                const playOnInteraction = async () => {
+                    if (!audioRef.current) return;
+                    try {
+                        await audioRef.current.play();
+                        setIsPlaying(true);
+                        // Cleanup listeners once successful
+                        ['click', 'touchstart', 'keydown', 'scroll'].forEach(event =>
+                            document.removeEventListener(event, playOnInteraction)
+                        );
+                    } catch (e) {
+                        console.error("Interaction play failed:", e);
                     }
                 };
 
-                document.addEventListener('click', enableAudio);
-                document.addEventListener('keydown', enableAudio);
-            });
-        }
+                // Add listeners for any user interaction
+                ['click', 'touchstart', 'keydown', 'scroll'].forEach(event =>
+                    document.addEventListener(event, playOnInteraction)
+                );
+            }
+        };
+
+        attemptPlay();
 
         // Add event listeners for error handling
         const handleError = (e: Event) => console.error("Audio error:", e);
@@ -59,19 +67,16 @@ export function MusicPlayer() {
         };
     }, []);
 
-    // Handle Play/Pause
+    // Handle Play/Pause synchronization
     useEffect(() => {
-        if (audioRef.current) {
-            if (isPlaying) {
-                const playPromise = audioRef.current.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.error("Autoplay prevented or failed:", error);
-                        // If blocked here, we might want to set isPlaying false, 
-                        // but usually the initial effect catches the first block.
-                    });
-                }
-            } else {
+        if (!audioRef.current) return;
+
+        if (isPlaying) {
+            if (audioRef.current.paused) {
+                audioRef.current.play().catch(e => console.error("Sync play failed:", e));
+            }
+        } else {
+            if (!audioRef.current.paused) {
                 audioRef.current.pause();
             }
         }

@@ -47,7 +47,7 @@ export default function Home() {
         {/* SPLIT TEXT ONLY FOR VELVYT */}
         <h1 className="text-6xl md:text-9xl font-display font-bold tracking-tighter mb-8 mix-blend-difference overflow-hidden">
           <SplitText
-            text="VELVYT"
+            text="velvyt"
             className="text-white inline-block"
             delay={100}
             duration={2}
