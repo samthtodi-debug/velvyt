@@ -10,14 +10,23 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
 
-  // Initialize Razorpay
-  const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID || "",
-    key_secret: process.env.RAZORPAY_KEY_SECRET || "",
-  });
+  // Initialize Razorpay conditionally to prevent crashes on deploy if keys are missing
+  let razorpay: Razorpay | null = null;
+  if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+    razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+  } else {
+    console.warn("Razorpay keys missing. Payment integration will be disabled.");
+  }
 
   // Create Payment Order
   app.post("/api/create-payment-order", async (req, res) => {
+    if (!razorpay) {
+      return res.status(503).json({ error: "Payment service unavailable (Configuration missing)" });
+    }
+
     try {
       const { amount } = req.body;
       const options = {
