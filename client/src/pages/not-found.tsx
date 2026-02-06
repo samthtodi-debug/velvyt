@@ -6,7 +6,7 @@ export default function NotFound() {
     <motion.div
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen flex items-center justify-center p-6 text-center"
+      className="absolute top-0 left-0 w-full min-h-screen flex items-center justify-center p-6 text-center"
     >
       <motion.div
         initial={{ opacity: 0 }}

@@ -31,7 +31,7 @@ export default function Home() {
     <motion.div
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      className="absolute top-0 left-0 w-full min-h-screen flex flex-col items-center justify-center overflow-hidden"
     >
 
       <motion.div

@@ -126,7 +126,7 @@ export default function Rsvp() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen flex items-center justify-center p-6 pt-24"
+      className="absolute top-0 left-0 w-full min-h-screen flex items-center justify-center p-6 pt-24"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
