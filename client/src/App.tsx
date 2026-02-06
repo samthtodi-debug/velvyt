@@ -9,6 +9,7 @@ import Events from "@/pages/Events";
 import Rsvp from "@/pages/Rsvp";
 import NotFound from "@/pages/not-found";
 import yepImg from "@/assets/yep.png";
+import { MusicPlayer } from "@/components/MusicPlayer";
 
 function Router() {
   return (
@@ -25,13 +26,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="fixed inset-0 z-0 pointer-events-auto">
-        <GridDistortion 
+        <GridDistortion
           imageSrc={yepImg}
           grid={15}
           mouse={0.1}
           strength={0.15}
           relaxation={0.9}
-          
+
           className="w-full h-full"
         />
       </div>
@@ -39,6 +40,7 @@ function App() {
       <Navigation />
       <Router />
       <Toaster />
+      <MusicPlayer />
     </QueryClientProvider>
   );
 }
