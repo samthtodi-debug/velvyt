@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -14,7 +15,14 @@ import { MusicPlayer } from "@/components/MusicPlayer";
 import { Intro } from "@/components/Intro";
 
 function Router() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
+
+  useEffect(() => {
+    if (location !== "/") {
+      setLocation("/");
+    }
+  }, []);
+
 
   return (
     <AnimatePresence>
