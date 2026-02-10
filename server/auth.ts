@@ -28,6 +28,10 @@ export function setupAuth(app: Express) {
         resave: false,
         saveUninitialized: false,
         store: storage.sessionStore,
+        cookie: {
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        },
+        rolling: true,
     };
 
     if (app.get("env") === "production") {
@@ -68,6 +72,16 @@ export function setupAuth(app: Express) {
             const existingUser = await storage.getUserByUsername(req.body.username);
             if (existingUser) {
                 return res.status(400).send("Username already exists");
+            }
+
+            const existingEmail = await storage.getUserByEmail(req.body.email);
+            if (existingEmail) {
+                return res.status(400).send("Email already exists");
+            }
+
+            const existingPhone = await storage.getUserByPhone(req.body.phone);
+            if (existingPhone) {
+                return res.status(400).send("Phone number already exists");
             }
 
             const hashedPassword = await hashPassword(req.body.password);

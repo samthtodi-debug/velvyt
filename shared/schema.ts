@@ -10,6 +10,8 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   phone: text("phone").notNull().unique(),
   instagramHandle: text("instagram_handle"),
+  avatarUrl: text("avatar_url").default("https://github.com/shadcn.png"),
+  bio: text("bio").default(""),
   isAdmin: boolean("is_admin").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
