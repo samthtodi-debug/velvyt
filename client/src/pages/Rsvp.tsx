@@ -10,12 +10,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { motion } from "framer-motion";
 import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
+import { Loader2 } from "lucide-react";
 
 // Enhance schema for frontend validation
 const formSchema = insertRsvpSchema.extend({
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number required"),
   eventId: z.coerce.number().min(1, "Please select an event"),
+  // Make sure optional fields can handle empty strings
+  instagramHandle: z.string().optional().or(z.literal('')),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -26,7 +29,7 @@ export default function Rsvp() {
   const eventIdParam = searchParams.get("event");
   const { user } = useAuth();
 
-  const { data: events } = useEvents();
+  const { data: events, isLoading: isLoadingEvents } = useEvents();
   const createRsvp = useCreateRsvp();
 
   const selectedEvent = events?.find(e => e.id === Number(eventIdParam));
@@ -46,16 +49,35 @@ export default function Rsvp() {
 
 
   async function onSubmit(data: FormValues) {
-    createRsvp.mutate(data, {
-      onSuccess: (newRsvp) => {
-        // Use wouter hook for navigation
-        setLocation(`/payment-qr/${newRsvp.id}`);
-      },
-      onError: (error) => {
-        alert("Failed to submit details. Please try again.");
-        console.error(error);
-      }
-    });
+    try {
+      // Clean up data before submission
+      const submissionData = {
+        ...data,
+        userId: user?.id, // Link to user if logged in
+        instagramHandle: data.instagramHandle || null, // Convert empty string to null
+      };
+
+      createRsvp.mutate(submissionData, {
+        onSuccess: (newRsvp) => {
+          // Navigate to Payment QR page using wouter
+          setLocation(`/payment-qr/${newRsvp.id}`);
+        },
+        onError: (error) => {
+          console.error("RSVP Submission Error:", error);
+          alert("Failed to submit details. Please try again.");
+        }
+      });
+    } catch (err) {
+      console.error("Form handling error:", err);
+    }
+  }
+
+  if (isLoadingEvents) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-white" />
+      </div>
+    );
   }
 
   return (
