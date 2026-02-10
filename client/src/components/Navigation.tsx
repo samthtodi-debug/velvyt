@@ -75,7 +75,7 @@ export function Navigation() {
               location === "/auth" ? "text-white" : "text-white/40"
             )}
           >
-            Login / Join
+            Join
           </Link>
         )}
       </div>
@@ -92,7 +92,7 @@ export function Navigation() {
         ) : (
           <Link href="/auth">
             <a className="text-xs font-medium uppercase tracking-widest text-white/40">
-              Login
+              Join
             </a>
           </Link>
         )}

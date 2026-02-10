@@ -15,15 +15,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-
-const loginSchema = z.object({
-    username: z.string().min(1, "Username is required"),
-    password: z.string().min(1, "Password is required"),
-});
-
-type LoginValues = z.infer<typeof loginSchema>;
 
 // Extend registration schema with confirm password or specific validations if needed
 // For now we use the shared schema directly for validation simplicity on client
@@ -37,7 +29,7 @@ const registerSchema = insertUserSchema.extend({
 type RegisterValues = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
-    const { user, loginMutation, registerMutation } = useAuth();
+    const { user, registerMutation } = useAuth();
     const [, setLocation] = useLocation();
 
     useEffect(() => {
@@ -45,14 +37,6 @@ export default function AuthPage() {
             setLocation("/");
         }
     }, [user, setLocation]);
-
-    const loginForm = useForm<LoginValues>({
-        resolver: zodResolver(loginSchema),
-        defaultValues: {
-            username: "",
-            password: "",
-        },
-    });
 
     const registerForm = useForm<RegisterValues>({
         resolver: zodResolver(registerSchema),
@@ -66,10 +50,6 @@ export default function AuthPage() {
             instagramHandle: "",
         },
     });
-
-    const onLogin = (data: LoginValues) => {
-        loginMutation.mutate(data);
-    };
 
     const onRegister = (data: RegisterValues) => {
         const { confirmPassword, ...userData } = data;
@@ -96,203 +76,146 @@ export default function AuthPage() {
                     </p>
                 </div>
 
-                <Tabs defaultValue="login" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 mb-8 bg-black/20">
-                        <TabsTrigger value="login" className="uppercase text-xs tracking-widest">Login</TabsTrigger>
-                        <TabsTrigger value="register" className="uppercase text-xs tracking-widest">Register</TabsTrigger>
-                    </TabsList>
+                <Form {...registerForm}>
+                    <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-4">
+                        <FormField
+                            control={registerForm.control}
+                            name="username"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-xs uppercase tracking-widest text-white/60">Username</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="velvyt_user"
+                                            className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={registerForm.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-xs uppercase tracking-widest text-white/60">Full Name</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Jane Doe"
+                                            className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                    <TabsContent value="login">
-                        <Form {...loginForm}>
-                            <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-6">
-                                <FormField
-                                    control={loginForm.control}
-                                    name="username"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs uppercase tracking-widest text-white/60">Username</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="velvyt_user"
-                                                    className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={loginForm.control}
-                                    name="password"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs uppercase tracking-widest text-white/60">Password</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="password"
-                                                    className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <Button
-                                    type="submit"
-                                    className="w-full bg-white text-black hover:bg-white/90 rounded-none h-12 uppercase text-xs font-bold tracking-widest mt-4"
-                                    disabled={loginMutation.isPending}
-                                >
-                                    {loginMutation.isPending ? "Logging in..." : "Login"}
-                                </Button>
-                            </form>
-                        </Form>
-                    </TabsContent>
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={registerForm.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-xs uppercase tracking-widest text-white/60">Email</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="email"
+                                                placeholder="jane@example.com"
+                                                className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={registerForm.control}
+                                name="phone"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-xs uppercase tracking-widest text-white/60">Phone</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                placeholder="+91..."
+                                                className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
 
-                    <TabsContent value="register">
-                        <Form {...registerForm}>
-                            <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-4">
-                                <FormField
-                                    control={registerForm.control}
-                                    name="username"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs uppercase tracking-widest text-white/60">Username</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="velvyt_user"
-                                                    className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={registerForm.control}
-                                    name="name"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs uppercase tracking-widest text-white/60">Full Name</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="Jane Doe"
-                                                    className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                        <FormField
+                            control={registerForm.control}
+                            name="instagramHandle"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-xs uppercase tracking-widest text-white/60">Instagram</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="@handle"
+                                            className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
+                                            {...field}
+                                            value={field.value || ""}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <FormField
-                                        control={registerForm.control}
-                                        name="email"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-xs uppercase tracking-widest text-white/60">Email</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="email"
-                                                        placeholder="jane@example.com"
-                                                        className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={registerForm.control}
-                                        name="phone"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-xs uppercase tracking-widest text-white/60">Phone</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="+91..."
-                                                        className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={registerForm.control}
+                                name="password"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-xs uppercase tracking-widest text-white/60">Password</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="password"
+                                                className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={registerForm.control}
+                                name="confirmPassword"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-xs uppercase tracking-widest text-white/60">Confirm Password</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="password"
+                                                className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
 
-                                <FormField
-                                    control={registerForm.control}
-                                    name="instagramHandle"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs uppercase tracking-widest text-white/60">Instagram</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="@handle"
-                                                    className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
-                                                    {...field}
-                                                    value={field.value || ""}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <FormField
-                                        control={registerForm.control}
-                                        name="password"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-xs uppercase tracking-widest text-white/60">Password</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="password"
-                                                        className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={registerForm.control}
-                                        name="confirmPassword"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-xs uppercase tracking-widest text-white/60">Confirm Password</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="password"
-                                                        className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-
-                                <Button
-                                    type="submit"
-                                    className="w-full bg-white text-black hover:bg-white/90 rounded-none h-12 uppercase text-xs font-bold tracking-widest mt-4"
-                                    disabled={registerMutation.isPending}
-                                >
-                                    {registerMutation.isPending ? "Creating Account..." : "Register"}
-                                </Button>
-                            </form>
-                        </Form>
-                    </TabsContent>
-                </Tabs>
+                        <Button
+                            type="submit"
+                            className="w-full bg-white text-black hover:bg-white/90 rounded-none h-12 uppercase text-xs font-bold tracking-widest mt-4"
+                            disabled={registerMutation.isPending}
+                        >
+                            {registerMutation.isPending ? "Creating Account..." : "Register"}
+                        </Button>
+                    </form>
+                </Form>
             </motion.div>
         </motion.div>
     );
