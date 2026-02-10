@@ -51,6 +51,14 @@ export const api = {
         400: errorSchemas.validation,
       },
     },
+    get: {
+      method: 'GET' as const,
+      path: '/api/rsvps/:id',
+      responses: {
+        200: z.custom<typeof rsvps.$inferSelect>(),
+        404: errorSchemas.notFound,
+      },
+    },
   },
 };
 

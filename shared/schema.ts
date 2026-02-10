@@ -19,7 +19,7 @@ export const rsvps = pgTable("rsvps", {
   email: text("email").notNull(),
   instagramHandle: text("instagram_handle"),
   phone: text("phone").default("").notNull(),
-  paymentMode: text("payment_mode").default("UPI").notNull(), // "UPI", "Cash", etc.
+
   status: text("status").default("pending"), // pending, approved, declined
   createdAt: timestamp("created_at").defaultNow(),
 });

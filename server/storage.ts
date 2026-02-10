@@ -15,6 +15,7 @@ export interface IStorage {
   createEvent(event: InsertEvent): Promise<Event>;
   updateEvent(id: number, event: Partial<InsertEvent>): Promise<Event | undefined>;
   createRsvp(rsvp: InsertRsvp): Promise<Rsvp>;
+  getRsvp(id: number): Promise<Rsvp | undefined>;
 }
 
 // TEMP: in-memory storage (NO DATABASE)
@@ -41,6 +42,11 @@ export class DatabaseStorage implements IStorage {
       .insert(rsvps)
       .values(insertRsvp)
       .returning();
+    return rsvp;
+  }
+
+  async getRsvp(id: number): Promise<Rsvp | undefined> {
+    const [rsvp] = await db.select().from(rsvps).where(eq(rsvps.id, id));
     return rsvp;
   }
 

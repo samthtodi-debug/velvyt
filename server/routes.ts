@@ -89,6 +89,14 @@ export async function registerRoutes(
     }
   });
 
+  app.get(api.rsvps.get.path, async (req, res) => {
+    const rsvp = await storage.getRsvp(Number(req.params.id));
+    if (!rsvp) {
+      return res.status(404).json({ message: 'RSVP not found' });
+    }
+    res.json(rsvp);
+  });
+
   // Seed Data
   await seedDatabase();
 

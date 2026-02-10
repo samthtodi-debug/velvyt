@@ -14,14 +14,13 @@ import { z } from "zod";
 const formSchema = insertRsvpSchema.extend({
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number required"),
-  paymentMode: z.string().min(1, "Please select payment mode"),
   eventId: z.coerce.number().min(1, "Please select an event"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 export default function Rsvp() {
-  const [location] = useLocation();
+  const [, setLocation] = useLocation();
   const searchParams = new URLSearchParams(window.location.search);
   const eventIdParam = searchParams.get("event");
 
@@ -37,87 +36,24 @@ export default function Rsvp() {
       email: "",
       instagramHandle: "",
       phone: "",
-      paymentMode: "UPI",
       eventId: eventIdParam ? parseInt(eventIdParam) : undefined,
     },
   });
 
   // Load Razorpay SDK
-  const loadRazorpay = () => {
-    return new Promise((resolve) => {
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
-  };
+
 
   async function onSubmit(data: FormValues) {
-    if (data.paymentMode === "UPI") {
-      // 1. Load SDK
-      const isLoaded = await loadRazorpay();
-      if (!isLoaded) {
-        alert("Razorpay SDK failed to load. Are you online?");
-        return;
+    createRsvp.mutate(data, {
+      onSuccess: (newRsvp) => {
+        // Use wouter hook for navigation
+        setLocation(`/payment-qr/${newRsvp.id}`);
+      },
+      onError: (error) => {
+        alert("Failed to submit details. Please try again.");
+        console.error(error);
       }
-
-      // 2. Create RSVP first (to get ID/record)
-      createRsvp.mutate(data, {
-        onSuccess: async (newRsvp) => {
-          // 3. Create Order
-          try {
-            const response = await fetch("/api/create-payment-order", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ amount: 50000 }), // 500 INR
-            });
-            const order = await response.json();
-
-            // 4. Open Razorpay
-            const options = {
-              key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_YOUR_TEST_KEY_HERE", // Replace with env var
-              amount: order.amount,
-              currency: order.currency,
-              name: "Velvyt Events",
-              description: "Event Access Pass",
-              image: "/images/genesis.jpg", // Use one of the event images
-              order_id: order.id,
-              handler: function (response: any) {
-                // Here you would verify payment on backend
-                alert(`Payment Successful! Payment ID: ${response.razorpay_payment_id}`);
-                form.reset();
-              },
-              prefill: {
-                name: data.name,
-                email: data.email,
-                contact: data.phone,
-              },
-              theme: {
-                color: "#000000",
-              },
-            };
-
-            const rzp1 = new (window as any).Razorpay(options);
-            rzp1.on("payment.failed", function (response: any) {
-              alert(response.error.description);
-            });
-            rzp1.open();
-          } catch (error) {
-            console.error("Payment setup failed:", error);
-            alert("Could not initiate payment.");
-          }
-        },
-      });
-    } else {
-      // Normal submission for Cash/Other
-      createRsvp.mutate(data, {
-        onSuccess: () => {
-          form.reset();
-          alert("Details Submitted Successfully!");
-        },
-      });
-    }
+    });
   }
 
   return (
@@ -216,28 +152,7 @@ export default function Rsvp() {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="paymentMode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs uppercase tracking-widest text-white/60">Preferred Payment Mode</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus:ring-0 focus:border-white transition-colors">
-                        <SelectValue placeholder="Select payment mode" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="UPI">UPI / GPay / Paytm</SelectItem>
-                      <SelectItem value="Cash">Cash at Gate</SelectItem>
-                      <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
 
             {!eventIdParam && (
               <FormField

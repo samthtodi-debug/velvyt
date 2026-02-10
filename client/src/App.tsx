@@ -10,6 +10,8 @@ import Home from "@/pages/Home";
 import Events from "@/pages/Events";
 import Rules from "@/pages/Rules";
 import Rsvp from "@/pages/Rsvp";
+import PaymentQR from "@/pages/PaymentQR";
+import Receipt from "@/pages/Receipt";
 import NotFound from "@/pages/not-found";
 import yepImg from "@/assets/yep.png";
 import { MusicPlayer } from "@/components/MusicPlayer";
@@ -32,6 +34,8 @@ function Router() {
         <Route path="/events" component={Events} />
         <Route path="/rules" component={Rules} />
         <Route path="/rsvp" component={Rsvp} />
+        <Route path="/payment-qr/:id" component={PaymentQR} />
+        <Route path="/receipt/:id" component={Receipt} />
         <Route component={NotFound} />
       </Switch>
     </AnimatePresence>
