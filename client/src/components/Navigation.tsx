@@ -27,7 +27,7 @@ export function Navigation() {
     { href: "/", label: "Home" },
     { href: "/events", label: "Events" },
     { href: "/rules", label: "Rules" },
-    { href: "/rsvp", label: "RSVP" },
+    { href: "/rsvp", label: "Register" },
   ];
 
   return (
@@ -54,7 +54,7 @@ export function Navigation() {
           </Link>
         ))}
 
-        {user ? (
+        {user && (
           <div className="flex items-center gap-4">
             <span className="text-xs font-medium uppercase tracking-widest text-white/60">
               Hi, {user.username}
@@ -66,35 +66,18 @@ export function Navigation() {
               Logout
             </button>
           </div>
-        ) : (
-          <Link
-            href="/auth"
-            className={cn(
-              "text-xs font-medium uppercase tracking-widest transition-all duration-300 hover:text-white",
-              user ? "hidden" : "", // Hide if logged in (redundant check but safe)
-              location === "/auth" ? "text-white" : "text-white/40"
-            )}
-          >
-            Register
-          </Link>
         )}
       </div>
 
       {/* Mobile Menu Placeholder - keeping it simple for MVP */}
       <div className="md:hidden flex items-center gap-4">
-        {user ? (
+        {user && (
           <button
             onClick={() => logoutMutation.mutate()}
             className="text-xs font-medium uppercase tracking-widest text-white/40"
           >
             Logout
           </button>
-        ) : (
-          <Link href="/auth">
-            <span className="text-xs font-medium uppercase tracking-widest text-white/40">
-              Register
-            </span>
-          </Link>
         )}
         <div className="flex flex-col gap-1.5 ml-2">
           <div className="w-6 h-0.5 bg-white"></div>
