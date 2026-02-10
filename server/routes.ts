@@ -84,13 +84,17 @@ export async function registerRoutes(
       const rsvp = await storage.createRsvp(input);
       res.status(201).json(rsvp);
     } catch (err) {
+      console.error("RSVP Create Error:", err);
       if (err instanceof z.ZodError) {
         return res.status(400).json({
           message: err.errors[0].message,
           field: err.errors[0].path.join('.'),
         });
       }
-      throw err;
+      // Return the actual error message for debugging
+      // In production, you might want to sanitize this, but for now we need to know why it fails
+      const message = err instanceof Error ? err.message : "Internal Server Error";
+      return res.status(500).json({ message });
     }
   });
 

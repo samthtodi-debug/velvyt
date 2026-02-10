@@ -64,7 +64,7 @@ export default function Rsvp() {
         },
         onError: (error) => {
           console.error("RSVP Submission Error:", error);
-          alert("Failed to submit details. Please try again.");
+          alert(`Failed to submit details: ${error.message}`);
         }
       });
     } catch (err) {
