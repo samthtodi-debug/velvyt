@@ -1,10 +1,13 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
 
 export function Navigation() {
   const [location] = useLocation();
   const [clickCount, setClickCount] = useState(0);
+  const { user, logoutMutation } = useAuth();
 
   useEffect(() => {
     if (clickCount === 0) return;
@@ -50,12 +53,53 @@ export function Navigation() {
             {link.label}
           </Link>
         ))}
+
+        {user ? (
+          <div className="flex items-center gap-4">
+            <span className="text-xs font-medium uppercase tracking-widest text-white/60">
+              Hi, {user.username}
+            </span>
+            <button
+              onClick={() => logoutMutation.mutate()}
+              className="text-xs font-medium uppercase tracking-widest transition-all duration-300 hover:text-white text-white/40"
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <Link
+            href="/auth"
+            className={cn(
+              "text-xs font-medium uppercase tracking-widest transition-all duration-300 hover:text-white",
+              user ? "hidden" : "", // Hide if logged in (redundant check but safe)
+              location === "/auth" ? "text-white" : "text-white/40"
+            )}
+          >
+            Login / Join
+          </Link>
+        )}
       </div>
 
       {/* Mobile Menu Placeholder - keeping it simple for MVP */}
-      <div className="md:hidden">
-        <div className="w-6 h-0.5 bg-white mb-1.5"></div>
-        <div className="w-6 h-0.5 bg-white"></div>
+      <div className="md:hidden flex items-center gap-4">
+        {user ? (
+          <button
+            onClick={() => logoutMutation.mutate()}
+            className="text-xs font-medium uppercase tracking-widest text-white/40"
+          >
+            Logout
+          </button>
+        ) : (
+          <Link href="/auth">
+            <a className="text-xs font-medium uppercase tracking-widest text-white/40">
+              Login
+            </a>
+          </Link>
+        )}
+        <div className="flex flex-col gap-1.5 ml-2">
+          <div className="w-6 h-0.5 bg-white"></div>
+          <div className="w-6 h-0.5 bg-white"></div>
+        </div>
       </div>
     </nav>
   );

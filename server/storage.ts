@@ -3,13 +3,26 @@ import {
   type InsertEvent,
   type Rsvp,
   type InsertRsvp,
+  type User,
+  type InsertUser,
+  users,
   events,
   rsvps,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, asc } from "drizzle-orm";
 
+import session from "express-session";
+import connectPg from "connect-pg-simple";
+import { pool } from "./db";
+
+const PostgresSessionStore = connectPg(session);
+
 export interface IStorage {
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  sessionStore: session.Store;
   getEvents(): Promise<Event[]>;
   getEvent(id: number): Promise<Event | undefined>;
   createEvent(event: InsertEvent): Promise<Event>;
@@ -18,8 +31,31 @@ export interface IStorage {
   getRsvp(id: number): Promise<Rsvp | undefined>;
 }
 
-// TEMP: in-memory storage (NO DATABASE)
 export class DatabaseStorage implements IStorage {
+  sessionStore: session.Store;
+
+  constructor() {
+    this.sessionStore = new PostgresSessionStore({
+      pool,
+      createTableIfMissing: true,
+    });
+  }
+
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
   async getEvents(): Promise<Event[]> {
     return await db.select().from(events).orderBy(asc(events.date));
   }

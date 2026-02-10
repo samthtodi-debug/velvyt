@@ -5,10 +5,15 @@ import { api } from "@shared/routes";
 import { z } from "zod";
 import Razorpay from "razorpay";
 
+import { setupAuth } from "./auth";
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+
+  // Setup Authentication
+  setupAuth(app);
 
   // Initialize Razorpay conditionally to prevent crashes on deploy if keys are missing
   let razorpay: Razorpay | null = null;

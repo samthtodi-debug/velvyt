@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { z } from "zod";
+import { useAuth } from "@/hooks/use-auth";
 
 // Enhance schema for frontend validation
 const formSchema = insertRsvpSchema.extend({
@@ -23,6 +24,7 @@ export default function Rsvp() {
   const [, setLocation] = useLocation();
   const searchParams = new URLSearchParams(window.location.search);
   const eventIdParam = searchParams.get("event");
+  const { user } = useAuth();
 
   const { data: events } = useEvents();
   const createRsvp = useCreateRsvp();
@@ -32,10 +34,10 @@ export default function Rsvp() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      instagramHandle: "",
-      phone: "",
+      name: user?.name || "",
+      email: user?.email || "",
+      instagramHandle: user?.instagramHandle || "",
+      phone: user?.phone || "",
       eventId: eventIdParam ? parseInt(eventIdParam) : undefined,
     },
   });

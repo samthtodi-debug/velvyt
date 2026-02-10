@@ -17,6 +17,9 @@ import yepImg from "@/assets/yep.png";
 import { MusicPlayer } from "@/components/MusicPlayer";
 import { Intro } from "@/components/Intro";
 
+import { AuthProvider } from "@/hooks/use-auth";
+import AuthPage from "@/pages/AuthPage";
+
 function Router() {
   const [location, setLocation] = useLocation();
 
@@ -31,6 +34,7 @@ function Router() {
     <AnimatePresence>
       <Switch location={location} key={location}>
         <Route path="/" component={Home} />
+        <Route path="/auth" component={AuthPage} />
         <Route path="/events" component={Events} />
         <Route path="/rules" component={Rules} />
         <Route path="/rsvp" component={Rsvp} />
@@ -45,28 +49,30 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Intro onEnter={() => {
-        // The click itself triggers the MusicPlayer's document listener
-        // We can also dispatch a custom event if needed
-        window.dispatchEvent(new Event('intro-enter'));
-        (window as any).introDismissed = true;
-      }} />
-      <div className="fixed inset-0 z-0 pointer-events-auto">
-        <GridDistortion
-          imageSrc={yepImg}
-          grid={15}
-          mouse={0.1}
-          strength={0.15}
-          relaxation={0.9}
+      <AuthProvider>
+        <Intro onEnter={() => {
+          // The click itself triggers the MusicPlayer's document listener
+          // We can also dispatch a custom event if needed
+          window.dispatchEvent(new Event('intro-enter'));
+          (window as any).introDismissed = true;
+        }} />
+        <div className="fixed inset-0 z-0 pointer-events-auto">
+          <GridDistortion
+            imageSrc={yepImg}
+            grid={15}
+            mouse={0.1}
+            strength={0.15}
+            relaxation={0.9}
 
-          className="w-full h-full"
-        />
-      </div>
-      <div className="noise-overlay" />
-      <Navigation />
-      <Router />
-      <Toaster />
-      <MusicPlayer />
+            className="w-full h-full"
+          />
+        </div>
+        <div className="noise-overlay" />
+        <Navigation />
+        <Router />
+        <Toaster />
+        <MusicPlayer />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
