@@ -79,23 +79,39 @@ export async function registerRoutes(
 
   // RSVPs API
   app.post(api.rsvps.create.path, async (req, res) => {
-    console.log("Received RSVP request:", req.body);
+    console.log("Received RSVP payload:", JSON.stringify(req.body, null, 2));
+
+    let inputData;
     try {
-      const input = api.rsvps.create.input.parse(req.body);
-      const rsvp = await storage.createRsvp(input);
-      res.status(201).json(rsvp);
-    } catch (err) {
-      console.error("RSVP Create Error:", err);
-      if (err instanceof z.ZodError) {
+      inputData = api.rsvps.create.input.parse(req.body);
+      console.log("Parsed Zod Input:", inputData);
+    } catch (zodError) {
+      console.error("Zod Validation Failed:", zodError);
+      if (zodError instanceof z.ZodError) {
         return res.status(400).json({
-          message: err.errors[0].message,
-          field: err.errors[0].path.join('.'),
+          message: `Validation Error: ${zodError.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`,
+          details: zodError.errors
         });
       }
-      // Return the actual error message for debugging
-      // In production, you might want to sanitize this, but for now we need to know why it fails
-      const message = err instanceof Error ? err.message : "Internal Server Error";
-      return res.status(500).json({ message });
+      return res.status(400).json({ message: "Invalid Input Format" });
+    }
+
+    try {
+      // Ensure userId and eventId are valid if present
+      // Note: inputData is already parsed by Zod, so types should be correct.
+      // However, let's double check if we need to manually map anything if Drizzle schema mismatches.
+      // Drizzle-Zod uses camelCase keys by default matching schema definition keys.
+
+      const rsvp = await storage.createRsvp(inputData);
+      console.log("RSVP Created:", rsvp);
+      res.status(201).json(rsvp);
+    } catch (dbError) {
+      console.error("Database Insertion Error:", dbError);
+      const message = dbError instanceof Error ? dbError.message : "Unknown Database Error";
+      return res.status(500).json({
+        message: `Database Error: ${message}`,
+        error: String(dbError)
+      });
     }
   });
 
