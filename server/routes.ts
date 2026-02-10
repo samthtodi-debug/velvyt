@@ -79,6 +79,7 @@ export async function registerRoutes(
 
   // RSVPs API
   app.post(api.rsvps.create.path, async (req, res) => {
+    console.log("Received RSVP request:", req.body);
     try {
       const input = api.rsvps.create.input.parse(req.body);
       const rsvp = await storage.createRsvp(input);

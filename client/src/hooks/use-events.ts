@@ -38,9 +38,13 @@ export function useCreateRsvp() {
       });
 
       if (!res.ok) {
-        if (res.status === 400) {
-          const error = api.rsvps.create.responses[400].parse(await res.json());
-          throw new Error(error.message);
+        try {
+          const errorData = await res.json();
+          if (errorData && errorData.message) {
+            throw new Error(errorData.message);
+          }
+        } catch (e) {
+          // If JSON parse fails or no message, fall through
         }
         throw new Error("Failed to submit RSVP");
       }
