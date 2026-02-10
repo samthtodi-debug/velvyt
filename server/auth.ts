@@ -4,8 +4,9 @@ import { Express } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
+import { z } from "zod";
 import { storage } from "./storage";
-import { User as SelectUser } from "@shared/schema";
+import { insertUserSchema, User as SelectUser } from "@shared/schema";
 
 const scryptAsync = promisify(scrypt);
 
@@ -69,24 +70,32 @@ export function setupAuth(app: Express) {
 
     app.post("/api/register", async (req, res, next) => {
         try {
-            const existingUser = await storage.getUserByUsername(req.body.username);
+            // Validate incoming data against the schema
+            const result = insertUserSchema.safeParse(req.body);
+            if (!result.success) {
+                return res.status(400).send(result.error.issues[0].message);
+            }
+
+            const data = result.data;
+
+            const existingUser = await storage.getUserByUsername(data.username);
             if (existingUser) {
                 return res.status(400).send("Username already exists");
             }
 
-            const existingEmail = await storage.getUserByEmail(req.body.email);
+            const existingEmail = await storage.getUserByEmail(data.email);
             if (existingEmail) {
                 return res.status(400).send("Email already exists");
             }
 
-            const existingPhone = await storage.getUserByPhone(req.body.phone);
+            const existingPhone = await storage.getUserByPhone(data.phone);
             if (existingPhone) {
                 return res.status(400).send("Phone number already exists");
             }
 
-            const hashedPassword = await hashPassword(req.body.password);
+            const hashedPassword = await hashPassword(data.password);
             const user = await storage.createUser({
-                ...req.body,
+                ...data,
                 password: hashedPassword,
             });
 
