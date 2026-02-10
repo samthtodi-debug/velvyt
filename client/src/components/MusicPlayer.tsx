@@ -12,12 +12,13 @@ export function MusicPlayer() {
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const closeTimerRef = useRef<NodeJS.Timeout>();
+    const volumeRef = useRef(volume);
 
     // Initialize audio
     useEffect(() => {
         // Using local audio file
         audioRef.current = new Audio("/audio/music.mp3");
-        audioRef.current.loop = true;
+        audioRef.current.loop = false; // Disable native loop to handle fade-in manually
         audioRef.current.volume = volume / 100;
 
         // Function to play audio
@@ -32,22 +33,73 @@ export function MusicPlayer() {
             }
         };
 
+        const fadeIn = () => {
+            const audio = audioRef.current;
+            if (!audio) return;
+
+            // Target is current user volume setting
+            const targetVolume = volumeRef.current / 100;
+            const duration = 3000; // 3 seconds fade in
+            const interval = 50;
+            const steps = duration / interval;
+            const stepSize = targetVolume / steps;
+
+            // Start silent
+            audio.volume = 0;
+
+            const fadeInterval = setInterval(() => {
+                // Stop if audio is gone or paused manually, or if we reached target
+                if (!audio || audio.paused) {
+                    clearInterval(fadeInterval);
+                    return;
+                }
+
+                // Smoothly ramp up to target volume
+                // Always fetch fresh target from ref (in case user changes volume during fade)
+                const currentTarget = volumeRef.current / 100;
+
+                if (audio.volume < currentTarget) {
+                    const newVol = Math.min(currentTarget, audio.volume + stepSize);
+                    audio.volume = newVol;
+                } else {
+                    // We reached the target (or exceeded, so we clamp)
+                    // If audio.volume >= currentTarget, we are done.
+                    // But wait, if user lowered volume, we might be above target already?
+                    // In that case, volume effect handles it. Here just stop fading.
+                    clearInterval(fadeInterval);
+                }
+            }, interval);
+        };
+
+        const handleEnded = () => {
+            if (!audioRef.current) return;
+            audioRef.current.currentTime = 0;
+
+            // Play returns a promise
+            audioRef.current.play()
+                .then(() => {
+                    // Once playing starts, begin fade in
+                    fadeIn();
+                })
+                .catch(e => console.error("Loop restart failed:", e));
+        };
+
         const handleIntroEnter = () => {
             playAudio();
         };
 
-        // Listen for the specific enter event
+        // Listen for events
         window.addEventListener('intro-enter', handleIntroEnter);
 
-        // Also check if intro was already dismissed (in case of navigation/reload where state persists but component remounts?)
-        // actually for now let's rely on the event. 
-        // If we want it to persist across hot reloads or navs where App doesn't unmount, we might need a prop. 
-        // But App likely doesn't unmount.
+        if (audioRef.current) {
+            audioRef.current.addEventListener('ended', handleEnded);
+        }
 
         return () => {
             window.removeEventListener('intro-enter', handleIntroEnter);
             if (audioRef.current) {
                 audioRef.current.pause();
+                audioRef.current.removeEventListener('ended', handleEnded);
                 audioRef.current = null;
             }
             if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
@@ -71,6 +123,7 @@ export function MusicPlayer() {
 
     // Handle Volume
     useEffect(() => {
+        volumeRef.current = isMuted ? 0 : volume; // Sync ref
         if (audioRef.current) {
             audioRef.current.volume = isMuted ? 0 : volume / 100;
         }
