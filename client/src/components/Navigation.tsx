@@ -27,7 +27,7 @@ export function Navigation() {
     { href: "/", label: "Home" },
     { href: "/events", label: "Events" },
     { href: "/rules", label: "Rules" },
-    { href: "/rsvp", label: "Register" },
+    { href: "/rsvp", label: "RSVP" },
   ];
 
   return (
@@ -75,7 +75,7 @@ export function Navigation() {
               location === "/auth" ? "text-white" : "text-white/40"
             )}
           >
-            Join
+            Register
           </Link>
         )}
       </div>
@@ -91,9 +91,9 @@ export function Navigation() {
           </button>
         ) : (
           <Link href="/auth">
-            <a className="text-xs font-medium uppercase tracking-widest text-white/40">
-              Join
-            </a>
+            <span className="text-xs font-medium uppercase tracking-widest text-white/40">
+              Register
+            </span>
           </Link>
         )}
         <div className="flex flex-col gap-1.5 ml-2">
