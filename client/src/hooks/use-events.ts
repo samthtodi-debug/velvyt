@@ -37,18 +37,23 @@ export function useCreateRsvp() {
         body: JSON.stringify(data),
       });
 
+      const responseText = await res.text();
       if (!res.ok) {
         try {
-          const errorData = await res.json();
+          const errorData = JSON.parse(responseText);
           if (errorData && errorData.message) {
             throw new Error(errorData.message);
           }
         } catch (e) {
-          // If JSON parse fails or no message, fall through
+          // If JSON parse fails, use the raw text if available
+          if (responseText && responseText.trim().length > 0) {
+            // Trim to avoid huge HTML dumps if possible, just take first 100 chars
+            throw new Error(`Server Error: ${responseText.slice(0, 100)}`);
+          }
         }
-        throw new Error("Failed to submit RSVP");
+        throw new Error(`Failed to submit RSVP (Status: ${res.status})`);
       }
-      return api.rsvps.create.responses[201].parse(await res.json());
+      return api.rsvps.create.responses[201].parse(JSON.parse(responseText));
     },
     onSuccess: () => {
       toast({

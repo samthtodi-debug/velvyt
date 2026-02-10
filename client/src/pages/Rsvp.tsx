@@ -52,10 +52,15 @@ export default function Rsvp() {
     try {
       // Clean up data before submission
       const submissionData = {
-        ...data,
-        userId: user?.id, // Link to user if logged in
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        eventId: Number(data.eventId),
+        userId: user?.id ? Number(user.id) : null, // Link to user if logged in, otherwise null
         instagramHandle: data.instagramHandle || null, // Convert empty string to null
       };
+
+      console.log("Submitting RSVP:", submissionData);
 
       createRsvp.mutate(submissionData, {
         onSuccess: (newRsvp) => {
@@ -69,6 +74,7 @@ export default function Rsvp() {
       });
     } catch (err) {
       console.error("Form handling error:", err);
+      alert("An unexpected error occurred while preparing the form.");
     }
   }
 
