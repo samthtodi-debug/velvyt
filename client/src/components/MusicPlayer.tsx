@@ -5,7 +5,7 @@ import { Volume2, VolumeX, Music, Pause, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function MusicPlayer() {
-    const [isPlaying, setIsPlaying] = useState(true);
+    const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(50);
     const [isMuted, setIsMuted] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -15,53 +15,39 @@ export function MusicPlayer() {
 
     // Initialize audio
     useEffect(() => {
-        // Using a more reliable lo-fi stream or file
         // Using local audio file
         audioRef.current = new Audio("/audio/music.mp3");
         audioRef.current.loop = true;
         audioRef.current.volume = volume / 100;
 
-        // Attempt autoplay
-        const attemptPlay = async () => {
+        // Function to play audio
+        const playAudio = async () => {
             if (!audioRef.current) return;
             try {
                 await audioRef.current.play();
                 setIsPlaying(true);
             } catch (error) {
-                console.log("Autoplay blocked. Waiting for interaction...");
+                console.error("Playback failed:", error);
                 setIsPlaying(false);
-
-                const playOnInteraction = async () => {
-                    if (!audioRef.current) return;
-                    try {
-                        await audioRef.current.play();
-                        setIsPlaying(true);
-                        // Cleanup listeners once successful
-                        ['click', 'touchstart', 'keydown', 'scroll'].forEach(event =>
-                            document.removeEventListener(event, playOnInteraction)
-                        );
-                    } catch (e) {
-                        console.error("Interaction play failed:", e);
-                    }
-                };
-
-                // Add listeners for any user interaction
-                ['click', 'touchstart', 'keydown', 'scroll'].forEach(event =>
-                    document.addEventListener(event, playOnInteraction)
-                );
             }
         };
 
-        attemptPlay();
+        const handleIntroEnter = () => {
+            playAudio();
+        };
 
-        // Add event listeners for error handling
-        const handleError = (e: Event) => console.error("Audio error:", e);
-        audioRef.current.addEventListener('error', handleError);
+        // Listen for the specific enter event
+        window.addEventListener('intro-enter', handleIntroEnter);
+
+        // Also check if intro was already dismissed (in case of navigation/reload where state persists but component remounts?)
+        // actually for now let's rely on the event. 
+        // If we want it to persist across hot reloads or navs where App doesn't unmount, we might need a prop. 
+        // But App likely doesn't unmount.
 
         return () => {
+            window.removeEventListener('intro-enter', handleIntroEnter);
             if (audioRef.current) {
                 audioRef.current.pause();
-                audioRef.current.removeEventListener('error', handleError);
                 audioRef.current = null;
             }
             if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
