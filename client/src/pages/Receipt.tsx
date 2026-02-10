@@ -101,15 +101,15 @@ export default function Receipt() {
 
                     <div className="flex justify-between">
                         <span className="font-bold">{event.title}</span>
-                        <span className="font-bold">₹500.00</span>
+                        <span className="font-bold">₹600.00</span>
                     </div>
-                    <div className="text-xs text-gray-500">Access Pass x 1</div>
+                    <div className="text-xs text-gray-500">Early Bird Access Pass x 1</div>
 
                     <div className="border-t border-dashed border-black/30 my-4 pt-4"></div>
 
                     <div className="flex justify-between items-end">
                         <span className="font-bold text-lg">TOTAL</span>
-                        <span className="font-bold text-lg">₹500.00</span>
+                        <span className="font-bold text-lg">₹600.00</span>
                     </div>
                 </div>
 

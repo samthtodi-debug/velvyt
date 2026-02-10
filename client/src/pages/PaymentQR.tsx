@@ -66,17 +66,17 @@ export default function PaymentQR() {
                 </p>
 
                 <div className="relative mx-auto w-64 h-64 bg-white p-4 mb-6 rounded-lg flex items-center justify-center">
-                    {/* Placeholder QR Code */}
-                    <div className="w-full h-full bg-black/10 border-2 border-dashed border-black/20 flex items-center justify-center flex-col gap-2">
-                        <span className="text-black font-bold text-xl">QR CODE</span>
-                        <span className="text-black/60 text-xs">Scan using any UPI App</span>
-                    </div>
+                    <img
+                        src="/images/payment-qr.png"
+                        alt="Payment QR Code"
+                        className="w-full h-full object-contain"
+                    />
                 </div>
 
                 <div className="space-y-4">
                     <div className="bg-white/5 p-4 rounded text-left">
-                        <p className="text-xs text-white/60 uppercase tracking-widest mb-1">Total Amount</p>
-                        <p className="text-xl font-bold">₹500.00</p>
+                        <p className="text-xs text-white/60 uppercase tracking-widest mb-1">Total Amount (Early Bird)</p>
+                        <p className="text-xl font-bold">₹600.00</p>
                     </div>
 
                     <div className="text-left text-sm text-white/60">
