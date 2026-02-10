@@ -67,7 +67,7 @@ export default function PaymentQR() {
 
                 <div className="relative mx-auto w-64 h-64 bg-white p-4 mb-6 rounded-lg flex items-center justify-center">
                     <img
-                        src="/images/payment-qr.png"
+                        src="/images/payment-qr.jpeg"
                         alt="Payment QR Code"
                         className="w-full h-full object-contain"
                     />
