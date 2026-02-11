@@ -124,7 +124,7 @@ export default function Home() {
           className="block w-full h-full"
         >
           <CircularText
-            text="Instagram"
+            text="FOLLOW THE CURATION "
             onHover="speedUp"
             spinDuration={43}
             className="text-white/60 text-xs"

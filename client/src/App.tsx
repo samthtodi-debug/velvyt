@@ -11,6 +11,7 @@ import Events from "@/pages/Events";
 import Rules from "@/pages/Rules";
 import Rsvp from "@/pages/Rsvp";
 import PaymentQR from "@/pages/PaymentQR";
+import PaymentProof from "@/pages/PaymentProof";
 import Receipt from "@/pages/Receipt";
 import NotFound from "@/pages/not-found";
 import yepImg from "@/assets/yep.png";
@@ -39,6 +40,7 @@ function Router() {
         <Route path="/rules" component={Rules} />
         <Route path="/rsvp" component={Rsvp} />
         <Route path="/payment-qr/:id" component={PaymentQR} />
+        <Route path="/payment-proof/:id" component={PaymentProof} />
         <Route path="/receipt/:id" component={Receipt} />
         <Route component={NotFound} />
       </Switch>

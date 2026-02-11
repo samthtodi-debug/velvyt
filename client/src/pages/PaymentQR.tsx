@@ -44,8 +44,8 @@ export default function PaymentQR() {
     }
 
     const handlePaymentComplete = () => {
-        // Navigate to receipt
-        setLocation(`/receipt/${id}`);
+        // Navigate to proof page
+        setLocation(`/payment-proof/${id}`);
     };
 
     return (
