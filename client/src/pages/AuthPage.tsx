@@ -48,6 +48,7 @@ export default function AuthPage() {
             email: "",
             phone: "",
             instagramHandle: "",
+            referralSource: "",
         },
     });
 
@@ -160,6 +161,25 @@ export default function AuthPage() {
                                     <FormControl>
                                         <Input
                                             placeholder="@handle"
+                                            className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
+                                            {...field}
+                                            value={field.value || ""}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={registerForm.control}
+                            name="referralSource"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-xs uppercase tracking-widest text-white/60">Referred By (Optional)</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Friend's Name"
                                             className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
                                             {...field}
                                             value={field.value || ""}

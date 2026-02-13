@@ -14,6 +14,7 @@ export const users = pgTable("users", {
   bio: text("bio").default(""),
   isAdmin: boolean("is_admin").default(false),
   createdAt: timestamp("created_at").defaultNow(),
+  referralSource: text("referral_source"),
 });
 
 export const events = pgTable("events", {

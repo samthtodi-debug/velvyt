@@ -43,6 +43,9 @@ export async function initDb() {
         console.log("Verifying rsvps schema for referral_source...");
         await pool.query(`ALTER TABLE "rsvps" ADD COLUMN IF NOT EXISTS "referral_source" text;`);
 
+        console.log("Verifying users schema for referral_source...");
+        await pool.query(`ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "referral_source" text;`);
+
         console.log("Manual schema verification execution complete.");
     } catch (manualError) {
         console.error("Manual schema fix failed:", manualError);
