@@ -42,6 +42,7 @@ export default function Rsvp() {
       instagramHandle: user?.instagramHandle || "",
       phone: user?.phone || "",
       eventId: eventIdParam ? parseInt(eventIdParam) : undefined,
+      referralSource: "",
     },
   });
 
@@ -58,6 +59,7 @@ export default function Rsvp() {
         eventId: Number(data.eventId),
         userId: user?.id ? Number(user.id) : null, // Link to user if logged in, otherwise null
         instagramHandle: data.instagramHandle || null, // Convert empty string to null
+        referralSource: data.referralSource || null,
       };
 
       console.log("Submitting RSVP:", submissionData);
@@ -175,6 +177,25 @@ export default function Rsvp() {
                       placeholder="+91 99999 99999"
                       className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
                       {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="referralSource"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs uppercase tracking-widest text-white/60">Referred By (Optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Name of friend"
+                      className="bg-transparent border-0 border-b border-white/10 rounded-none px-0 focus-visible:ring-0 focus-visible:border-white transition-colors"
+                      {...field}
+                      value={field.value || ""}
                     />
                   </FormControl>
                   <FormMessage />

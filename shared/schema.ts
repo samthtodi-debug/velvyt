@@ -36,6 +36,7 @@ export const rsvps = pgTable("rsvps", {
   email: text("email").notNull(),
   instagramHandle: text("instagram_handle"),
   phone: text("phone").default("").notNull(),
+  referralSource: text("referral_source"),
 
   status: text("status").default("pending"), // pending, approved, declined
   createdAt: timestamp("created_at").defaultNow(),
