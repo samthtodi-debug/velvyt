@@ -140,7 +140,7 @@ async function seedDatabase() {
     const today = new Date();
 
     // Event 1: Genesis (updated)
-    const event1Date = new Date("2026-03-14T18:00:00+05:30");
+    const event1Date = new Date("2026-03-21T18:00:00+05:30");
 
     // Event 2: A month later
     const event2Date = new Date(today);
@@ -155,6 +155,7 @@ async function seedDatabase() {
       imageUrl: genesisImg,
       isExclusive: true,
     });
+
 
     await storage.createEvent({
       title: "Midnight Mirage",
@@ -181,8 +182,8 @@ async function seedDatabase() {
         const updates: any = {};
         if (event.imageUrl !== genesisImg) updates.imageUrl = genesisImg;
 
-        // Update date to 03.14.26 6:00 PM IST
-        const genesisDate = new Date("2026-03-14T18:00:00+05:30");
+        // Update date to 03.21.26 6:00 PM IST
+        const genesisDate = new Date("2026-03-21T18:00:00+05:30");
         if (event.date.getTime() !== genesisDate.getTime()) {
           updates.date = genesisDate;
         }
