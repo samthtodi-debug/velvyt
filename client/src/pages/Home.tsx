@@ -66,7 +66,7 @@ export default function Home() {
           className="relative z-10 text-center px-4"
         >
           <p className="text-xs md:text-sm font-mono text-white/40 tracking-[0.5em] mb-6 md:mb-8">
-            EST. 03.21.26
+            EST. 2026
           </p>
 
           {/* SPLIT TEXT ONLY FOR VELVYT */}
